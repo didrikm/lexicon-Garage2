@@ -10,6 +10,9 @@
         public string Model { get; set; }
         public int NumberOfWheels { get; set; }
         public DateTime ParkingTime { get; set; }
-
+        public Vehicle()
+        {
+            ParkingTime = DateTime.Now;
+        }
     }
 }

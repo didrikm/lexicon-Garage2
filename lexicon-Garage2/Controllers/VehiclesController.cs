@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using lexicon_Garage2.Data;
+﻿using lexicon_Garage2.Data;
 using lexicon_Garage2.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace lexicon_Garage2.Controllers
 {
@@ -20,6 +20,16 @@ namespace lexicon_Garage2.Controllers
             return View(await _context.Vehicle.ToListAsync());
         }
 
+        // GET: Filter data
+        public async Task<IActionResult> Filter(string registrationNumber)
+        {
+            var model = string.IsNullOrWhiteSpace(registrationNumber)
+                ? _context.Vehicle
+                : _context.Vehicle.Where(m => m.RegistrationNumber.Contains(registrationNumber));
+
+            return View(nameof(Index), await model.ToListAsync());
+        }
+
         // GET: Vehicles/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -28,8 +38,7 @@ namespace lexicon_Garage2.Controllers
                 return NotFound();
             }
 
-            var vehicle = await _context.Vehicle
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var vehicle = await _context.Vehicle.FirstOrDefaultAsync(m => m.Id == id);
             if (vehicle == null)
             {
                 return NotFound();
@@ -49,7 +58,10 @@ namespace lexicon_Garage2.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,VehicleType,RegistrationNumber,Color,Brand,Model,NumberOfWheels,ParkingTime")] Vehicle vehicle)
+        public async Task<IActionResult> Create(
+            [Bind("Id,VehicleType,RegistrationNumber,Color,Brand,Model,NumberOfWheels,ParkingTime")]
+                Vehicle vehicle
+        )
         {
             if (ModelState.IsValid)
             {
@@ -81,7 +93,11 @@ namespace lexicon_Garage2.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,VehicleType,RegistrationNumber,Color,Brand,Model,NumberOfWheels,ParkingTime")] Vehicle vehicle)
+        public async Task<IActionResult> Edit(
+            int id,
+            [Bind("Id,VehicleType,RegistrationNumber,Color,Brand,Model,NumberOfWheels,ParkingTime")]
+                Vehicle vehicle
+        )
         {
             if (id != vehicle.Id)
             {
@@ -119,8 +135,7 @@ namespace lexicon_Garage2.Controllers
                 return NotFound();
             }
 
-            var vehicle = await _context.Vehicle
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var vehicle = await _context.Vehicle.FirstOrDefaultAsync(m => m.Id == id);
             if (vehicle == null)
             {
                 return NotFound();

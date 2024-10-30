@@ -50,12 +50,13 @@ namespace lexicon_Garage2.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,VehicleType,RegistrationNumber,Color,Brand,Model,NumberOfWheels,ParkingTime")] Vehicle vehicle)
+        public async Task<IActionResult> Create([Bind("Id,VehicleType,RegistrationNumber,Color,Brand,Model,NumberOfWheels")] Vehicle vehicle)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
+                    vehicle.ParkingTime = DateTime.Now;  // Sätter tidstämpeln automatiskt till aktuell tid
                     _context.Add(vehicle);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
@@ -71,6 +72,7 @@ namespace lexicon_Garage2.Controllers
             }
             return View(vehicle);
         }
+
 
         // GET: Vehicles/Edit/5
         public async Task<IActionResult> Edit(int? id)

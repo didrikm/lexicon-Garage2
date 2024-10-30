@@ -21,6 +21,13 @@ namespace lexicon_Garage2.Controllers
             return View(await _context.Vehicle.ToListAsync());
         }
 
+        public async Task<IActionResult> Garage()
+        {
+            var list = _context.Vehicle.Select(vehicle => new VehicleViewModel(vehicle));
+            return View("Garage", await list.ToListAsync());
+        }
+
+
         // GET: Vehicles/Details/5
         public async Task<IActionResult> Details(int? id)
         {

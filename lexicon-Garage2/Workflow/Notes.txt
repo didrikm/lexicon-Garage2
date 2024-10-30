@@ -2,7 +2,7 @@ Index layout
 Constraints i Vehicle - Didrik
 Dropdown för VehicleType - Ammara
 Automatisk tidsstämpel - Yun
-Skapa och implementera ViewModel - Luna
+Skapa och implementera ViewModel - Luna - klar
 Kvitto
 Feedback/utcheckningsmeddelande
 Filtrering/sök - Ammara

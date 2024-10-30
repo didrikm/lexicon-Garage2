@@ -7,7 +7,7 @@ namespace lexicon_Garage2.Models
         public int Id { get; set; }
 
         [Required]
-        public VehicleTypeEnum VehicleType { get; set; }
+        public VehicleType VehicleType { get; set; }
 
         [Required]
         [StringLength(20, MinimumLength = 3)]
@@ -31,5 +31,14 @@ namespace lexicon_Garage2.Models
 
         public DateTime ParkingTime { get; set; }
 
+    }
+
+    public enum VehicleType
+    {
+        Car,
+        Bus,
+        Airplane,
+        Boat,
+        Motorcycle,
     }
 }

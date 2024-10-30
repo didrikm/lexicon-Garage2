@@ -3,7 +3,7 @@
     public class Vehicle
     {
         public int Id { get; set; }
-        public string VehicleType { get; set; }
+        public VehicleTypeEnum VehicleType { get; set; }
         public string RegistrationNumber { get; set; }
         public string Color { get; set; }
         public string Brand { get; set; }

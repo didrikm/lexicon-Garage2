@@ -1,9 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using lexicon_Garage2.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using lexicon_Garage2.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<lexicon_Garage2Context>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("lexicon_Garage2Context") ?? throw new InvalidOperationException("Connection string 'lexicon_Garage2Context' not found.")));
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("lexicon_Garage2Context")
+            ?? throw new InvalidOperationException(
+                "Connection string 'lexicon_Garage2Context' not found."
+            )
+    )
+);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

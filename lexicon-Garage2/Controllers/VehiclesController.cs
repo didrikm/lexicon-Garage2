@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using lexicon_Garage2.Data;
 using lexicon_Garage2.Models;
+using Microsoft.Data.SqlClient;
 
 namespace lexicon_Garage2.Controllers
 {
@@ -60,9 +61,20 @@ namespace lexicon_Garage2.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(vehicle);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    _context.Add(vehicle);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateException ex) when (ex.InnerException is SqlException sqlEx && sqlEx.Number == 2601)
+                {
+                    ModelState.AddModelError("RegistrationNumber", "A vehicle with this registration number is already parked.");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Bigly error: ", ex);
+                }
             }
             return View(vehicle);
         }

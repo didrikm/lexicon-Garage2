@@ -1,0 +1,8 @@
+Index layout
+Constraints i Vehicle - Didrik
+Dropdown för VehicleType - Ammara
+Automatisk tidsstämpel - Yun
+Skapa och implementera ViewModel - Luna
+Kvitto
+Feedback/utcheckningsmeddelande
+Filtrering/sök

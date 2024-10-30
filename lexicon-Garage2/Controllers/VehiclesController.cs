@@ -21,6 +21,13 @@ namespace lexicon_Garage2.Controllers
             return View(await _context.Vehicle.ToListAsync());
         }
 
+        public async Task<IActionResult> Garage()
+        {
+            var list = _context.Vehicle.Select(vehicle => new VehicleViewModel(vehicle));
+            return View("Garage", await list.ToListAsync());
+        }
+
+
         // GET: Vehicles/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -50,7 +57,7 @@ namespace lexicon_Garage2.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,VehicleType,RegistrationNumber,Color,Brand,Model,NumberOfWheels,ParkingTime")] Vehicle vehicle)
+        public async Task<IActionResult> Create([Bind("Id,VehicleType,RegistrationNumber,Color,Brand,Model,NumberOfWheels")] Vehicle vehicle)
         {
             if (ModelState.IsValid)
             {
@@ -71,6 +78,7 @@ namespace lexicon_Garage2.Controllers
             }
             return View(vehicle);
         }
+
 
         // GET: Vehicles/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -93,7 +101,7 @@ namespace lexicon_Garage2.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,VehicleType,RegistrationNumber,Color,Brand,Model,NumberOfWheels,ParkingTime")] Vehicle vehicle)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,VehicleType,RegistrationNumber,Color,Brand,Model,NumberOfWheels")] Vehicle vehicle)
         {
             if (id != vehicle.Id)
             {
@@ -104,6 +112,15 @@ namespace lexicon_Garage2.Controllers
             {
                 try
                 {
+                    var existingVehicle = await _context.Vehicle.AsNoTracking().FirstOrDefaultAsync(v => v.Id == id);
+                    if (existingVehicle == null)
+                    {
+                        return NotFound();
+                    }
+
+                    // Bevara originalvärdet för ArrivalTime
+                    vehicle.ParkingTime = existingVehicle.ParkingTime;
+
                     _context.Update(vehicle);
                     await _context.SaveChangesAsync();
                 }
@@ -122,6 +139,7 @@ namespace lexicon_Garage2.Controllers
             }
             return View(vehicle);
         }
+
 
         // GET: Vehicles/Delete/5
         public async Task<IActionResult> Delete(int? id)

@@ -30,7 +30,10 @@ namespace lexicon_Garage2.Models
         public int NumberOfWheels { get; set; }
 
         public DateTime ParkingTime { get; set; }
-
+        public Vehicle()
+        {
+            ParkingTime = DateTime.Now;
+        }
     }
 
     public enum VehicleType

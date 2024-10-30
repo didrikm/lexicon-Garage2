@@ -1,8 +1,12 @@
 Pages layout - Luna
-Constraints i Vehicle - Didrik
-Dropdown för VehicleType - Ammara
-Automatisk tidsstämpel - Yun
+Constraints i Vehicle - Didrik - klar
+Dropdown för VehicleType - Ammara - klar
+Automatisk tidsstämpel - Yun - klar
 Skapa och implementera ViewModel - Luna - klar
-Kvitto
-Feedback/utcheckningsmeddelande
+Kvitto - Didrik
+Feedback/utcheckningsmeddelande - Yun
 Filtrering/sök - Ammara
+
+Möte 30/10
+TODO
+Ta bort Index och göra Garage till main

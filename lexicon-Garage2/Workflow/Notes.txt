@@ -1,4 +1,4 @@
-Index layout - Luna
+Pages layout - Luna
 Constraints i Vehicle - Didrik
 Dropdown för VehicleType - Ammara
 Automatisk tidsstämpel - Yun

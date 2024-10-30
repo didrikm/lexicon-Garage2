@@ -1,15 +1,43 @@
-﻿namespace lexicon_Garage2.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace lexicon_Garage2.Models
 {
     public class Vehicle
     {
         public int Id { get; set; }
-        public string VehicleType { get; set; }
-        public string RegistrationNumber { get; set; }
-        public string Color { get; set; }
-        public string Brand { get; set; }
-        public string Model { get; set; }
-        public int NumberOfWheels { get; set; }
-        public DateTime ParkingTime { get; set; }
 
+        [Required]
+        public VehicleType VehicleType { get; set; }
+
+        [Required]
+        [StringLength(20, MinimumLength = 3)]
+        public string RegistrationNumber { get; set; }
+
+        [Required]
+        [StringLength(20, MinimumLength = 3)]
+        public string Color { get; set; }
+
+        [Required]
+        [StringLength(20, MinimumLength = 3)]
+        public string Brand { get; set; }
+
+        [Required]
+        [StringLength(20, MinimumLength = 3)]
+        public string Model { get; set; }
+
+        [Required]
+        [Range(0, 20)]
+        public int NumberOfWheels { get; set; }
+
+        public DateTime ParkingTime { get; set; }
+    }
+
+    public enum VehicleType
+    {
+        Car,
+        Bus,
+        Airplane,
+        Boat,
+        Motorcycle,
     }
 }

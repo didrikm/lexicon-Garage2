@@ -9,6 +9,22 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
+<form asp-action="" method="get">
+    <div class="input-group mb-3">
+        <input type="text" class="form-control" name="" />
+        <div class="input-group-append">
+            <select class="form-control" name="" asp-items="@Html.GetEnumSelectList<VehicleType>()">
+                <option selected="selected" value="">Please select</option>
+            </select>
+        </div>
+        <div class="input-group-append">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </div>
+</form>
+
+
 <table class="table">
     <thead>
         <tr>

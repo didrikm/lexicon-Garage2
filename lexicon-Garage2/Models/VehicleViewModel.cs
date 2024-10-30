@@ -2,6 +2,14 @@
 {
     public class VehicleViewModel
     {
+        public VehicleViewModel(Vehicle vehicle)
+        {
+            Id = vehicle.Id;
+            VehicleType = vehicle.VehicleType;
+            RegistrationNumber = vehicle.RegistrationNumber;
+            ArrivalTime = vehicle.ParkingTime;
+        }
+
         public int Id { get; set; }
         public string VehicleType { get; set; }
         public string RegistrationNumber { get; set; }

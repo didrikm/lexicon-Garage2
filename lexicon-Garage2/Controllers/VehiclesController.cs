@@ -65,6 +65,7 @@ namespace lexicon_Garage2.Controllers
                 {
                     _context.Add(vehicle);
                     await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "Parking has started.";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateException ex) when (ex.InnerException is SqlException sqlEx && sqlEx.Number == 2601)
@@ -76,6 +77,7 @@ namespace lexicon_Garage2.Controllers
                     Console.WriteLine("Bigly error: ", ex);
                 }
             }
+            TempData["ErrorMessage"] = "Could not park the vehicle. Please check your inputs.";
             return View(vehicle);
         }
 
@@ -123,6 +125,7 @@ namespace lexicon_Garage2.Controllers
 
                     _context.Update(vehicle);
                     await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "The vehicle has been updated.";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -137,6 +140,7 @@ namespace lexicon_Garage2.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            TempData["ErrorMessage"] = "Could not update. Please check your inputs.";
             return View(vehicle);
         }
 
@@ -168,8 +172,12 @@ namespace lexicon_Garage2.Controllers
             if (vehicle != null)
             {
                 _context.Vehicle.Remove(vehicle);
+                TempData["SuccessMessage"] = "Parking has ended.";
             }
-
+            else
+            {
+                TempData["ErrorMessage"] = "Could not find the vehicle.";
+            }
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

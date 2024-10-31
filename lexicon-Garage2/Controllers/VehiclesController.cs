@@ -16,7 +16,7 @@ namespace lexicon_Garage2.Controllers
         }
 
         // GET: Vehicles
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Admin()
         {
             return View(await _context.Vehicle.ToListAsync());
         }

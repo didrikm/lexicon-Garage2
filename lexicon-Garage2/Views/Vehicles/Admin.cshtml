@@ -1,13 +1,13 @@
 ﻿@model IEnumerable<lexicon_Garage2.Models.Vehicle>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Admin";
 }
 
-<h1>Index</h1>
+<h1>Admin</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Park vehicle</a>
 </p>
 @* Search Function UI *@
 <form asp-action="Filter" method="get">
@@ -73,7 +73,7 @@
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Delete" asp-route-id="@item.Id">Check out</a>
             </td>
         </tr>
 }

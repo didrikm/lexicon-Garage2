@@ -1,63 +1,51 @@
 ﻿@model lexicon_Garage2.Models.Vehicle
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Remove";
 }
 
-<h1>Delete</h1>
+<h1 class="text-center mb-4 text-dark fw-bold">Remove Vehicle</h1>
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>Vehicle</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.VehicleType)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.VehicleType)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.RegistrationNumber)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RegistrationNumber)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Color)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Color)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Brand)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Brand)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Model)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Model)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.NumberOfWheels)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.NumberOfWheels)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ParkingTime)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ParkingTime)
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+<div class="d-flex justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm border-0" style="background-color: #FEFEFA;">
+            <div class="card-body p-4">
+                <h3 class="text-center mb-4 text-secondary">Are you sure you want to remove this vehicle?</h3>
+
+                <h4 class="text-dark fw-bold">Vehicle Details</h4>
+                <hr />
+
+                <dl class="row">
+                    <dt class="col-sm-4 text-dark fw-semibold">Vehicle Type</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.VehicleType)</dd>
+
+                    <dt class="col-sm-4 text-dark fw-semibold">Registration Number</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.RegistrationNumber)</dd>
+
+                    <dt class="col-sm-4 text-dark fw-semibold">Color</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.Color)</dd>
+
+                    <dt class="col-sm-4 text-dark fw-semibold">Brand</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.Brand)</dd>
+
+                    <dt class="col-sm-4 text-dark fw-semibold">Model</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.Model)</dd>
+
+                    <dt class="col-sm-4 text-dark fw-semibold">Number of Wheels</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.NumberOfWheels)</dd>
+
+                    <dt class="col-sm-4 text-dark fw-semibold">Parking Time</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.ParkingTime)</dd>
+                </dl>
+
+                <div class="text-center mt-4">
+                    <form asp-action="Delete" class="d-inline">
+                        <input type="hidden" asp-for="Id" />
+                        <button type="submit" class="btn btn-danger px-4 me-3">Remove</button>
+                    </form>
+                    <a asp-action="Garage" class="btn btn-secondary px-4">Back to Garage</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

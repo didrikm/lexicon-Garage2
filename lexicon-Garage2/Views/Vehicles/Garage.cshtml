@@ -9,6 +9,17 @@
 <p>
     <a asp-action="Create">Park new vehicle</a>
 </p>
+
+@* Search Function UI *@
+<form asp-action="Filter" method="get">
+    <div class="input-group mb-3">
+        <input type="text" class="form-control" name="registrationNumber" placeholder="Please Enter registration number:" />
+
+        <div class="input-group-append">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </div>
+</form>
 <table class="table">
     <thead>
         <tr>

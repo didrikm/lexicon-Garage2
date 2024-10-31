@@ -7,4 +7,4 @@ Skapa och implementera ViewModel - Luna - klar
 Kvitto - Didrik klar
 Feedback/utcheckningsmeddelande - Yun klar
 Filtrering/sök - Ammara klar
-Ta bort Index och göra Garage till main - Luna klar
+Ta bort Garage och göra Garage till main - Luna klar

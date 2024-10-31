@@ -4,7 +4,7 @@ Dropdown för VehicleType - Ammara - klar
 Automatisk tidsstämpel - Yun - klar
 Skapa och implementera ViewModel - Luna - klar
 
-Kvitto - Didrik
-Feedback/utcheckningsmeddelande - Yun
-Filtrering/sök - Ammara
-Ta bort Index och göra Garage till main - Luna
+Kvitto - Didrik klar
+Feedback/utcheckningsmeddelande - Yun klar
+Filtrering/sök - Ammara klar
+Ta bort Index och göra Garage till main - Luna klar

@@ -16,7 +16,7 @@ namespace lexicon_Garage2.Controllers
         }
 
         // GET: Vehicles
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Admin()
         {
             return View(await _context.Vehicle.ToListAsync());
         }
@@ -28,7 +28,7 @@ namespace lexicon_Garage2.Controllers
                 ? _context.Vehicle
                 : _context.Vehicle.Where(m => m.RegistrationNumber.Contains(registrationNumber));
 
-            return View(nameof(Index), await model.ToListAsync());
+            return View(nameof(Garage), await model.ToListAsync());
         }
 
         public async Task<IActionResult> Garage()
@@ -77,7 +77,7 @@ namespace lexicon_Garage2.Controllers
                     _context.Add(vehicle);
                     await _context.SaveChangesAsync();
                     TempData["SuccessMessage"] = "Parking has started.";
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(Garage));
                 }
                 catch (DbUpdateException ex)
                     when (ex.InnerException is SqlException sqlEx && sqlEx.Number == 2601)
@@ -158,7 +158,7 @@ namespace lexicon_Garage2.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Garage));
             }
             TempData["ErrorMessage"] = "Could not update. Please check your inputs.";
             return View(vehicle);
@@ -200,7 +200,7 @@ namespace lexicon_Garage2.Controllers
                 TempData["ErrorMessage"] = "Could not find the vehicle.";
             }
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Garage));
         }
 
         private bool VehicleExists(int id)

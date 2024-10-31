@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using lexicon_Garage2.Data;
+﻿using lexicon_Garage2.Data;
 using lexicon_Garage2.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 
 namespace lexicon_Garage2.Controllers
 {
@@ -21,12 +21,21 @@ namespace lexicon_Garage2.Controllers
             return View(await _context.Vehicle.ToListAsync());
         }
 
+        // GET: Filter data
+        public async Task<IActionResult> Filter(string registrationNumber)
+        {
+            var model = string.IsNullOrWhiteSpace(registrationNumber)
+                ? _context.Vehicle
+                : _context.Vehicle.Where(m => m.RegistrationNumber.Contains(registrationNumber));
+
+            return View(nameof(Index), await model.ToListAsync());
+        }
+
         public async Task<IActionResult> Garage()
         {
             var list = _context.Vehicle.Select(vehicle => new VehicleViewModel(vehicle));
             return View("Garage", await list.ToListAsync());
         }
-
 
         // GET: Vehicles/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -36,8 +45,7 @@ namespace lexicon_Garage2.Controllers
                 return NotFound();
             }
 
-            var vehicle = await _context.Vehicle
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var vehicle = await _context.Vehicle.FirstOrDefaultAsync(m => m.Id == id);
             if (vehicle == null)
             {
                 return NotFound();
@@ -57,7 +65,10 @@ namespace lexicon_Garage2.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,VehicleType,RegistrationNumber,Color,Brand,Model,NumberOfWheels")] Vehicle vehicle)
+        public async Task<IActionResult> Create(
+            [Bind("Id,VehicleType,RegistrationNumber,Color,Brand,Model,NumberOfWheels")]
+                Vehicle vehicle
+        )
         {
             if (ModelState.IsValid)
             {
@@ -65,20 +76,25 @@ namespace lexicon_Garage2.Controllers
                 {
                     _context.Add(vehicle);
                     await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "Parking has started.";
                     return RedirectToAction(nameof(Index));
                 }
-                catch (DbUpdateException ex) when (ex.InnerException is SqlException sqlEx && sqlEx.Number == 2601)
+                catch (DbUpdateException ex)
+                    when (ex.InnerException is SqlException sqlEx && sqlEx.Number == 2601)
                 {
-                    ModelState.AddModelError("RegistrationNumber", "A vehicle with this registration number is already parked.");
+                    ModelState.AddModelError(
+                        "RegistrationNumber",
+                        "A vehicle with this registration number is already parked."
+                    );
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine("Bigly error: ", ex);
                 }
             }
+            TempData["ErrorMessage"] = "Could not park the vehicle. Please check your inputs.";
             return View(vehicle);
         }
-
 
         // GET: Vehicles/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -101,7 +117,11 @@ namespace lexicon_Garage2.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,VehicleType,RegistrationNumber,Color,Brand,Model,NumberOfWheels")] Vehicle vehicle)
+        public async Task<IActionResult> Edit(
+            int id,
+            [Bind("Id,VehicleType,RegistrationNumber,Color,Brand,Model,NumberOfWheels,ParkingTime")]
+                Vehicle vehicle
+        )
         {
             if (id != vehicle.Id)
             {
@@ -112,7 +132,9 @@ namespace lexicon_Garage2.Controllers
             {
                 try
                 {
-                    var existingVehicle = await _context.Vehicle.AsNoTracking().FirstOrDefaultAsync(v => v.Id == id);
+                    var existingVehicle = await _context
+                        .Vehicle.AsNoTracking()
+                        .FirstOrDefaultAsync(v => v.Id == id);
                     if (existingVehicle == null)
                     {
                         return NotFound();
@@ -123,6 +145,7 @@ namespace lexicon_Garage2.Controllers
 
                     _context.Update(vehicle);
                     await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "The vehicle has been updated.";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -137,9 +160,9 @@ namespace lexicon_Garage2.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            TempData["ErrorMessage"] = "Could not update. Please check your inputs.";
             return View(vehicle);
         }
-
 
         // GET: Vehicles/Delete/5
         public async Task<IActionResult> Delete(int? id)
@@ -149,8 +172,7 @@ namespace lexicon_Garage2.Controllers
                 return NotFound();
             }
 
-            var vehicle = await _context.Vehicle
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var vehicle = await _context.Vehicle.FirstOrDefaultAsync(m => m.Id == id);
             if (vehicle == null)
             {
                 return NotFound();
@@ -168,8 +190,12 @@ namespace lexicon_Garage2.Controllers
             if (vehicle != null)
             {
                 _context.Vehicle.Remove(vehicle);
+                TempData["SuccessMessage"] = "Parking has ended.";
             }
-
+            else
+            {
+                TempData["ErrorMessage"] = "Could not find the vehicle.";
+            }
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

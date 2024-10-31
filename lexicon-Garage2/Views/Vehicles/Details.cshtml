@@ -4,57 +4,43 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<h1 class="text-center mb-4 text-dark fw-bold">Vehicle Details</h1>
 
-<div>
-    <h4>Vehicle</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.VehicleType)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.VehicleType)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.RegistrationNumber)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RegistrationNumber)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Color)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Color)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Brand)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Brand)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Model)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Model)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.NumberOfWheels)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.NumberOfWheels)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ParkingTime)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ParkingTime)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+<div class="d-flex justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm border-0" style="background-color: #FEFEFA;">
+            <div class="card-body p-4">
+                <h4 class="text-dark fw-bold">Vehicle Information</h4>
+                <hr />
+
+                <dl class="row">
+                    <dt class="col-sm-4 text-dark fw-semibold">Vehicle Type</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.VehicleType)</dd>
+
+                    <dt class="col-sm-4 text-dark fw-semibold">Registration Number</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.RegistrationNumber)</dd>
+
+                    <dt class="col-sm-4 text-dark fw-semibold">Color</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.Color)</dd>
+
+                    <dt class="col-sm-4 text-dark fw-semibold">Brand</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.Brand)</dd>
+
+                    <dt class="col-sm-4 text-dark fw-semibold">Model</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.Model)</dd>
+
+                    <dt class="col-sm-4 text-dark fw-semibold">Number of Wheels</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.NumberOfWheels)</dd>
+
+                    <dt class="col-sm-4 text-dark fw-semibold">Parking Time</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.ParkingTime)</dd>
+                </dl>
+
+                <div class="text-center mt-4">
+                    <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-primary px-4 me-3">Edit</a>
+                    <a asp-action="Index" class="btn btn-secondary px-4">Back to List</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

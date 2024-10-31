@@ -57,6 +57,7 @@ namespace lexicon_Garage2.Migrations
                         .HasColumnType("nvarchar(20)");
 
                     b.Property<int>("VehicleType")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.HasKey("Id");

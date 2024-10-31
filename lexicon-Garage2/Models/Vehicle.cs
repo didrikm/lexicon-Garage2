@@ -26,10 +26,11 @@ namespace lexicon_Garage2.Models
         public string Model { get; set; }
 
         [Required]
-        [Range(0,20)]
+        [Range(0, 20)]
         public int NumberOfWheels { get; set; }
 
         public DateTime ParkingTime { get; set; }
+
         public Vehicle()
         {
             ParkingTime = DateTime.Now;

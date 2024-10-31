@@ -190,7 +190,10 @@ namespace lexicon_Garage2.Controllers
             if (vehicle != null)
             {
                 _context.Vehicle.Remove(vehicle);
+                await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Parking has ended.";
+                var receiptViewModel = new ReceiptViewModel(vehicle);
+                return View("Receipt", receiptViewModel);
             }
             else
             {

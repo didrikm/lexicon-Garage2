@@ -10,7 +10,7 @@
 <p><strong>Check-Out Time:</strong> @Model.CheckOutTime</p>
 <p><strong>Duration of Parking:</strong> @Model.GetFormattedDuration()</p>
 <p><strong>Total:</strong> @Model.Total.ToString("C")</p>
-<a asp-action="Index">Return to Garage</a>
+<a asp-action="Garage">Return to Garage</a>
 <span> | </span>
 <a href="javascript:void(0);" onclick="generatePDF()">Print receipt</a>
 

@@ -1,0 +1,12 @@
+﻿@model ReceiptViewModel
+
+@{
+    ViewData["Title"] = "Receipt";
+}
+
+<h2>Receipt</h2>
+<p><strong>Registration Number:</strong> @Model.RegistrationNumber</p>
+<p><strong>Check-In Time:</strong> @Model.CheckInTime</p>
+<p><strong>Check-Out Time:</strong> @Model.CheckOutTime</p>
+<p><strong>Duration of Parking:</strong> @Model.DurationOfParking hours</p>
+<p><strong>Total:</strong> @Model.Total :-</p>

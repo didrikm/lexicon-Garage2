@@ -5,15 +5,19 @@
         public string RegistrationNumber { get; set; }
         public DateTime CheckInTime { get; set; }
         public DateTime CheckOutTime { get; set; }
-        public float DurationOfParking { get; set; }
-        public float Total { get; set; }
+        public TimeSpan DurationOfParking { get; set; }
+        public decimal Total { get; set; }
         public ReceiptViewModel(Vehicle vehicle)
         {
             RegistrationNumber = vehicle.RegistrationNumber;
             CheckInTime = vehicle.ParkingTime;
             CheckOutTime = DateTime.Now;
-            DurationOfParking = (float)(CheckOutTime - CheckInTime).TotalHours;
-            Total = 100 * DurationOfParking;
+            DurationOfParking = CheckOutTime - CheckInTime;
+            Total = 100 * (decimal)DurationOfParking.TotalHours;
+        }
+        public string GetFormattedDuration()
+        {
+            return $"{DurationOfParking.Hours} h {DurationOfParking.Minutes} m {DurationOfParking.Seconds} s";
         }
     }
 }

@@ -8,8 +8,8 @@
 <p><strong>Registration Number:</strong> @Model.RegistrationNumber</p>
 <p><strong>Check-In Time:</strong> @Model.CheckInTime</p>
 <p><strong>Check-Out Time:</strong> @Model.CheckOutTime</p>
-<p><strong>Duration of Parking:</strong> @Model.DurationOfParking hours</p>
-<p><strong>Total:</strong> @Model.Total :-</p>
+<p><strong>Duration of Parking:</strong> @Model.GetFormattedDuration()</p>
+<p><strong>Total:</strong> @Model.Total.ToString("C")</p>
 <a asp-action="Index">Return to Garage</a>
 <span> | </span>
 <a asp-action="">Print receipt</a>

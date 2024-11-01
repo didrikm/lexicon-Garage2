@@ -6,52 +6,86 @@
 
 <h1>@ViewData["Title"]</h1>
 
-<p>
+@* <p>
     <a asp-action="Create">Park vehicle</a>
-</p>
-@* Search Function UI *@
-<form asp-action="Filter" method="get">
-    <div class="input-group mb-3">
-        <input type="text" class="form-control" name="registrationNumber" placeholder="Please Enter registration number:" />
+</p> *@
 
-        <div class="input-group-append">
-            <button type="submit" class="btn btn-primary">Search</button>
-        </div>
-    </div>
-</form>
+<button type="button" class="btn btn-primary mb-1" onclick="location.href='@Url.Action("Create", "Vehicles")'">
+    Park vehicle
+</button>
+
+
+
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.VehicleType)
+                <a asp-action="Garage" asp-route-sortColumn="VehicleType" asp-route-sortOrder="@(ViewData["CurrentSort"]?.ToString() == "VehicleType_asc" ? "desc" : "asc")">
+                    @Html.DisplayNameFor(model => model.VehicleType)
+                    @(ViewData["CurrentSort"]?.ToString() == "VehicleType_asc" ? "▼" : "▲")
+                </a>
+                <form asp-action="Garage">
+                    <input type="text" name="searchTerm" placeholder="Filter by vehicle type ⤶" class="form-control filter-input" />
+                </form>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.RegistrationNumber)
+                <a asp-action="Garage" asp-route-sortColumn="RegistrationNumber" asp-route-sortOrder="@(ViewData["CurrentSort"]?.ToString() == "RegistrationNumber_asc" ? "desc" : "asc")">
+                    @Html.DisplayNameFor(model => model.RegistrationNumber)
+                    @(ViewData["CurrentSort"]?.ToString() == "RegistrationNumber_asc" ? "▼" : "▲")
+                </a>
+                <form asp-action="Garage">
+                    <input type="text" name="searchTerm" placeholder="Filter by registration number ⤶" class="form-control filter-input" />
+                </form>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ArrivalTime)
+                <a asp-action="Garage" asp-route-sortColumn="ArrivalTime" asp-route-sortOrder="@(ViewData["CurrentSort"]?.ToString() == "ArrivalTime_asc" ? "desc" : "asc")">
+                    @Html.DisplayNameFor(model => model.ArrivalTime)
+                    @(ViewData["CurrentSort"]?.ToString() == "ArrivalTime_asc" ? "▼" : "▲")
+                </a>
+                <form asp-action="Garage" method="get">
+                    <select name="timeFilter" class="form-control form-select" onchange="this.form.submit()">
+                        <option value="">Filter by time</option>
+                        <option value="minute">Past Minute</option>
+                        <option value="hour">Past Hour</option>
+                        <option value="day">Past Day</option>
+                    </select>
+                </form>
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.VehicleType)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RegistrationNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ArrivalTime)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Check out</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.VehicleType)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RegistrationNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ArrivalTime)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Check out</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.filter-input').forEach(input => {
+            input.addEventListener('keydown', function (event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    this.form.submit();
+                }
+            });
+        });
+    </script>
+}

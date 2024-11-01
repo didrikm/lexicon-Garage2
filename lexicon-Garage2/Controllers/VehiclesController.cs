@@ -31,10 +31,48 @@ namespace lexicon_Garage2.Controllers
             return View(nameof(Garage), await model.ToListAsync());
         }
 
-        public async Task<IActionResult> Garage()
+        // GET: Garage
+        public async Task<IActionResult> Garage(string? searchTerm = null, string sortColumn = "RegistrationNumber", string sortOrder = "asc", string? timeFilter = null)
         {
-            var list = _context.Vehicle.Select(vehicle => new VehicleViewModel(vehicle));
-            return View("Garage", await list.ToListAsync());
+            IQueryable<Vehicle> vehicles = _context.Vehicle;
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                if (Enum.TryParse<VehicleType>(searchTerm, out var vehicleTypeEnum))
+                {
+                    vehicles = vehicles.Where(v => v.VehicleType == vehicleTypeEnum);
+                }
+                else
+                {
+                    vehicles = vehicles.Where(v => v.RegistrationNumber.Contains(searchTerm));
+                }
+            }
+
+            if (!string.IsNullOrEmpty(timeFilter))
+            {
+                var now = DateTime.Now;
+                vehicles = timeFilter switch
+                {
+                    "minute" => vehicles.Where(v => v.ParkingTime >= now.AddMinutes(-1)),
+                    "hour" => vehicles.Where(v => v.ParkingTime >= now.AddHours(-1)),
+                    "day" => vehicles.Where(v => v.ParkingTime >= now.AddDays(-1)),
+                    _ => vehicles
+                };
+            }
+
+            vehicles = sortColumn switch
+            {
+                "RegistrationNumber" => sortOrder == "asc" ? vehicles.OrderBy(v => v.RegistrationNumber) : vehicles.OrderByDescending(v => v.RegistrationNumber),
+                "VehicleType" => sortOrder == "asc" ? vehicles.OrderBy(v => v.VehicleType) : vehicles.OrderByDescending(v => v.VehicleType),
+                "ArrivalTime" => sortOrder == "asc" ? vehicles.OrderBy(v => v.ParkingTime) : vehicles.OrderByDescending(v => v.ParkingTime),
+                _ => vehicles.OrderBy(v => v.RegistrationNumber)
+            };
+
+            var vehicleViewModels = await vehicles.Select(vehicle => new VehicleViewModel(vehicle)).ToListAsync();
+
+            ViewData["CurrentSort"] = $"{sortColumn}_{sortOrder}";
+
+            return View(vehicleViewModels);
         }
 
         // GET: Vehicles/Details/5

@@ -32,7 +32,7 @@ namespace lexicon_Garage2.Controllers
         }
 
         // GET: Garage
-        public async Task<IActionResult> Garage(string? searchTerm = null, string sortColumn = "RegistrationNumber", string sortOrder = "asc", string? timeFilter = null)
+        public async Task<IActionResult> Garage(string? searchTerm = null, string sortColumn = "ArrivalTime", string sortOrder = "asc", string? timeFilter = null)
         {
             IQueryable<Vehicle> vehicles = _context.Vehicle;
 

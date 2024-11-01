@@ -7,4 +7,16 @@ Skapa och implementera ViewModel - Luna - klar
 Kvitto - Didrik klar
 Feedback/utcheckningsmeddelande - Yun klar
 Filtrering/sök - Ammara klar
+frontend (create, delete, deatail, edit, kvitto) Ammara - KLar
 Ta bort Garage och göra Garage till main - Luna klar
+kategorier - Didrik - 
+
+ Garage 2.0 del 2 - Utökad funktionalite: EXTRA
+
+ -  Översikt - statistik
+ -  Begränsat antal platser - Yun
+ -  Var sak på sin plats - Ammara
+ -  Utökad översikt - Ammara
+ -  Olika stora fordon
+ -  Effektiva motorcyklar
+ -  Giltiga fordonstyper

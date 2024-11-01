@@ -28,7 +28,7 @@ namespace lexicon_Garage2.Models
         [Required]
         [Range(0, 20)]
         public int NumberOfWheels { get; set; }
-
+        public int ParkingSpotNumber { get; set; } // vehicles spots
         public DateTime ParkingTime { get; set; }
 
         public Vehicle()

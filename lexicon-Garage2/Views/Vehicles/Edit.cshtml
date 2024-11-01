@@ -50,9 +50,12 @@
                         <input asp-for="NumberOfWheels" class="form-control border-dark text-dark" />
                         <span asp-validation-for="NumberOfWheels" class="text-danger"></span>
                     </div>
-                    <div class="text-center mt-4 ">
-                        <input type="submit" value="Update Vehicle" class="btn btn-dark px-4 mx-10" />
-                        <a asp-action="Garage" class="btn btn-secondary px-4 mr-10">Back to Garage</a>
+                    <div class="text-center mt-4">
+                        <form asp-action="Edit" class="d-inline">
+                            <input type="hidden" asp-for="Id" />
+                            <button type="submit" class="btn btn-success px-4 me-3">Update Vehicle</button>
+                        </form>
+                        <a asp-action="Garage" class="btn btn-secondary px-4">Back to Garage</a>
                     </div>
                 </form>
             </div>

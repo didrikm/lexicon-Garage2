@@ -52,8 +52,11 @@
                         <span asp-validation-for="NumberOfWheels" class="text-danger"></span>
                     </div>
 
-                    <div class="form-group text-center mb-4 mt-3">
-                        <input type="submit" value="Park" class="btn btn-dark px-5" />
+                    <div class="text-center mt-4">
+                        <form asp-action="Create" class="d-inline">
+                            <input type="hidden" asp-for="Id" />
+                            <button type="submit" class="btn btn-success px-4 me-3">Park</button>
+                        </form>
                         <a asp-action="Garage" class="btn btn-secondary px-4">Back to Garage</a>
                     </div>
                 </form>

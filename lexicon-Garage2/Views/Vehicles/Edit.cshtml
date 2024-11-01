@@ -50,18 +50,14 @@
                         <input asp-for="NumberOfWheels" class="form-control border-dark text-dark" />
                         <span asp-validation-for="NumberOfWheels" class="text-danger"></span>
                     </div>
-
-                    <div class="form-group text-center mb-4 mt-3">
-                        <input type="submit" value="Update Vehicle" class="btn btn-dark px-5" />
+                    <div class="text-center mt-4 ">
+                        <input type="submit" value="Update Vehicle" class="btn btn-dark px-4 mx-10" />
+                        <a asp-action="Garage" class="btn btn-secondary px-4 mr-10">Back to Garage</a>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Garage">Back to Garage</a>
 </div>
 
 @section Scripts {

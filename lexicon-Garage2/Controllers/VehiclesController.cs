@@ -9,10 +9,16 @@ namespace lexicon_Garage2.Controllers
     public class VehiclesController : Controller
     {
         private readonly lexicon_Garage2Context _context;
-
+        private const int MaxCapacity = 100;
         public VehiclesController(lexicon_Garage2Context context)
         {
             _context = context;
+        }
+
+        public int GetAvailableSpots()
+        {
+            int occupiedSpots = _context.Vehicle.Count();
+            return MaxCapacity - occupiedSpots;
         }
 
         // GET: Vehicles
@@ -31,8 +37,10 @@ namespace lexicon_Garage2.Controllers
             return View(nameof(Garage), await model.ToListAsync());
         }
 
+        // GET: Vehicles/Garage
         public async Task<IActionResult> Garage()
         {
+            ViewBag.AvailableSpots = GetAvailableSpots(); // Beräkna och skicka lediga platser till vyn
             var list = _context.Vehicle.Select(vehicle => new VehicleViewModel(vehicle));
             return View("Garage", await list.ToListAsync());
         }
@@ -70,6 +78,13 @@ namespace lexicon_Garage2.Controllers
                 Vehicle vehicle
         )
         {
+            // Check if there are available spots
+            if (GetAvailableSpots() <= 0)
+            {
+                TempData["ErrorMessage"] = "The garage is full. No more spots are available!";
+                return RedirectToAction(nameof(Garage));
+            }
+
             if (ModelState.IsValid)
             {
                 try

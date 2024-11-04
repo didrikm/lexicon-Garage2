@@ -1,4 +1,5 @@
 ﻿using lexicon_Garage2.Data;
+using lexicon_Garage2.Migrations;
 using lexicon_Garage2.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -9,6 +10,9 @@ namespace lexicon_Garage2.Controllers
     public class VehiclesController : Controller
     {
         private readonly lexicon_Garage2Context _context;
+
+        public readonly decimal ParkingHourlyPrice = 100;
+        public static decimal AccumulatedParkingRevenue {  get; set; }
 
         public VehiclesController(lexicon_Garage2Context context)
         {
@@ -230,7 +234,7 @@ namespace lexicon_Garage2.Controllers
                 _context.Vehicle.Remove(vehicle);
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Parking has ended.";
-                var receiptViewModel = new ReceiptViewModel(vehicle);
+                var receiptViewModel = new ReceiptViewModel(vehicle, ParkingHourlyPrice);
                 return View("Receipt", receiptViewModel);
             }
             else
@@ -244,14 +248,18 @@ namespace lexicon_Garage2.Controllers
         // GET: Statistics
         public async Task<IActionResult> Statistics()
         {
-            IQueryable<Vehicle> vehicles = _context.Vehicle;
-            Console.WriteLine(vehicles.Count());
-            Console.WriteLine(vehicles.Sum(v => v.NumberOfWheels));
+            var vehicles = await _context.Vehicle.ToListAsync();
+            var vehicleStats = new StatisticsViewModel
+            {
+                NumberOfVehiclesParked = vehicles.Count,
+                NumberOfWheelsInGarage = vehicles.Sum(v => v.NumberOfWheels),
+                UnrealizedParkingRevenue = vehicles.Sum(v => (decimal)(DateTime.Now - v.ParkingTime).TotalHours) * ParkingHourlyPrice
+                // TODO: lägg till AccumulatedParkingRevenue
+            };
+
+            Console.WriteLine(vehicleStats.UnrealizedParkingRevenue);
+
             return RedirectToAction("Garage");
-            //Count
-            //foreach number of wheels
-            //count * parkedtime * price
-            //global variabel för total parkeringsrevenue?
         }
 
         private bool VehicleExists(int id)

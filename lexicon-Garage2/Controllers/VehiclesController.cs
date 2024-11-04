@@ -25,15 +25,6 @@ namespace lexicon_Garage2.Controllers
             return View(await _context.Vehicle.ToListAsync());
         }
 
-        // GET: Filter data
-        public async Task<IActionResult> Filter(string registrationNumber)
-        {
-            var model = string.IsNullOrWhiteSpace(registrationNumber)
-                ? _context.Vehicle
-                : _context.Vehicle.Where(m => m.RegistrationNumber.Contains(registrationNumber));
-
-            return View(nameof(Garage), await model.ToListAsync());
-        }
 
         // GET: Garage
         public async Task<IActionResult> Garage(string? searchTerm = null, string sortColumn = "ArrivalTime", string sortOrder = "asc", string? timeFilter = null)

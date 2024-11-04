@@ -31,6 +31,9 @@ namespace lexicon_Garage2.Models
 
         public DateTime ParkingTime { get; set; }
 
+        // New Property for Parking Spot
+        public int? ParkingSpot { get; set; }
+
         public Vehicle()
         {
             ParkingTime = DateTime.Now;

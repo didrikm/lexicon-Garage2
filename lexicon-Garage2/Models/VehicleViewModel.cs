@@ -8,11 +8,15 @@
             VehicleType = vehicle.VehicleType;
             RegistrationNumber = vehicle.RegistrationNumber;
             ArrivalTime = vehicle.ParkingTime;
+            ParkingSpot = vehicle.ParkingSpot;
         }
 
         public int Id { get; set; }
         public VehicleType VehicleType { get; set; }
         public string RegistrationNumber { get; set; }
         public DateTime ArrivalTime { get; set; }
+
+        // New property for Parking Spot
+        public int? ParkingSpot { get; set; }
     }
 }

@@ -10,6 +10,7 @@ namespace lexicon_Garage2.Controllers
     {
         private readonly lexicon_Garage2Context _context;
         private const int MaxCapacity = 100;
+
         public VehiclesController(lexicon_Garage2Context context)
         {
             _context = context;
@@ -21,6 +22,22 @@ namespace lexicon_Garage2.Controllers
             return MaxCapacity - occupiedSpots;
         }
 
+        public int? GetNextAvailableSpot()
+        {
+            var occupiedSpots = _context
+                .Vehicle.Where(v => v.ParkingSpot != null)
+                .Select(v => v.ParkingSpot!.Value)
+                .ToList();
+
+            for (int i = 1; i <= MaxCapacity; i++)
+            {
+                if (!occupiedSpots.Contains(i))
+                {
+                    return i;
+                }
+            }
+            return null; // No spots available
+        }
 
         // GET: Vehicles
         public async Task<IActionResult> Admin()
@@ -37,9 +54,14 @@ namespace lexicon_Garage2.Controllers
 
             return View(nameof(Garage), await model.ToListAsync());
         }
-   
+
         // GET: Garage
-        public async Task<IActionResult> Garage(string? searchTerm = null, string sortColumn = "ArrivalTime", string sortOrder = "asc", string? timeFilter = null)
+        public async Task<IActionResult> Garage(
+            string? searchTerm = null,
+            string sortColumn = "ArrivalTime",
+            string sortOrder = "asc",
+            string? timeFilter = null
+        )
         {
             ViewBag.AvailableSpots = GetAvailableSpots();
             IQueryable<Vehicle> vehicles = _context.Vehicle;
@@ -64,19 +86,27 @@ namespace lexicon_Garage2.Controllers
                     "minute" => vehicles.Where(v => v.ParkingTime >= now.AddMinutes(-1)),
                     "hour" => vehicles.Where(v => v.ParkingTime >= now.AddHours(-1)),
                     "day" => vehicles.Where(v => v.ParkingTime >= now.AddDays(-1)),
-                    _ => vehicles
+                    _ => vehicles,
                 };
             }
 
             vehicles = sortColumn switch
             {
-                "RegistrationNumber" => sortOrder == "asc" ? vehicles.OrderBy(v => v.RegistrationNumber) : vehicles.OrderByDescending(v => v.RegistrationNumber),
-                "VehicleType" => sortOrder == "asc" ? vehicles.OrderBy(v => v.VehicleType) : vehicles.OrderByDescending(v => v.VehicleType),
-                "ArrivalTime" => sortOrder == "asc" ? vehicles.OrderBy(v => v.ParkingTime) : vehicles.OrderByDescending(v => v.ParkingTime),
-                _ => vehicles.OrderBy(v => v.ParkingTime)
+                "RegistrationNumber" => sortOrder == "asc"
+                    ? vehicles.OrderBy(v => v.RegistrationNumber)
+                    : vehicles.OrderByDescending(v => v.RegistrationNumber),
+                "VehicleType" => sortOrder == "asc"
+                    ? vehicles.OrderBy(v => v.VehicleType)
+                    : vehicles.OrderByDescending(v => v.VehicleType),
+                "ArrivalTime" => sortOrder == "asc"
+                    ? vehicles.OrderBy(v => v.ParkingTime)
+                    : vehicles.OrderByDescending(v => v.ParkingTime),
+                _ => vehicles.OrderBy(v => v.ParkingTime),
             };
 
-            var vehicleViewModels = await vehicles.Select(vehicle => new VehicleViewModel(vehicle)).ToListAsync();
+            var vehicleViewModels = await vehicles
+                .Select(vehicle => new VehicleViewModel(vehicle))
+                .ToListAsync();
 
             ViewData["CurrentSort"] = $"{sortColumn}_{sortOrder}";
 
@@ -116,10 +146,17 @@ namespace lexicon_Garage2.Controllers
                 Vehicle vehicle
         )
         {
-            // Check if there are available spots
             if (GetAvailableSpots() <= 0)
             {
                 TempData["ErrorMessage"] = "The garage is full. No more spots are available!";
+                return RedirectToAction(nameof(Garage));
+            }
+
+            vehicle.ParkingSpot = GetNextAvailableSpot();
+
+            if (vehicle.ParkingSpot == null)
+            {
+                TempData["ErrorMessage"] = "No available parking spots found.";
                 return RedirectToAction(nameof(Garage));
             }
 
@@ -129,7 +166,7 @@ namespace lexicon_Garage2.Controllers
                 {
                     _context.Add(vehicle);
                     await _context.SaveChangesAsync();
-                    TempData["SuccessMessage"] = "Parking has started.";
+                    TempData["SuccessMessage"] = $"Vehicle parked at spot {vehicle.ParkingSpot}.";
                     return RedirectToAction(nameof(Garage));
                 }
                 catch (DbUpdateException ex)
@@ -142,7 +179,7 @@ namespace lexicon_Garage2.Controllers
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Bigly error: ", ex);
+                    Console.WriteLine("Error:", ex);
                 }
             }
             TempData["ErrorMessage"] = "Could not park the vehicle. Please check your inputs.";
@@ -234,7 +271,6 @@ namespace lexicon_Garage2.Controllers
             return View(vehicle);
         }
 
-        // POST: Vehicles/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -244,15 +280,14 @@ namespace lexicon_Garage2.Controllers
             {
                 _context.Vehicle.Remove(vehicle);
                 await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = "Parking has ended.";
-                var receiptViewModel = new ReceiptViewModel(vehicle);
-                return View("Receipt", receiptViewModel);
+                TempData["SuccessMessage"] =
+                    $"Vehicle has left. Spot {vehicle.ParkingSpot} is now available.";
+                return RedirectToAction(nameof(Garage));
             }
             else
             {
                 TempData["ErrorMessage"] = "Could not find the vehicle.";
             }
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Garage));
         }
 

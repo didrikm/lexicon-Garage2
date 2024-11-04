@@ -6,9 +6,6 @@
 
 <h1>@ViewData["Title"]</h1>
 
-@* <p>
-    <a asp-action="Create">Park vehicle</a>
-</p> *@
 <div class="alert alert-info">
     There are @ViewBag.AvailableSpots spots available in the garage.
 </div>
@@ -55,6 +52,9 @@
                     </select>
                 </form>
             </th>
+            <th>
+                Parking Spot
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -62,15 +62,10 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.VehicleType)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.RegistrationNumber)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ArrivalTime)
-                </td>
+                <td>@Html.DisplayFor(modelItem => item.VehicleType)</td>
+                <td>@Html.DisplayFor(modelItem => item.RegistrationNumber)</td>
+                <td>@Html.DisplayFor(modelItem => item.ArrivalTime)</td>
+                <td>@item.ParkingSpot</td> <!-- Display Parking Spot -->
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.Id">Details</a> |

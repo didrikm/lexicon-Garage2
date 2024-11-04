@@ -35,6 +35,47 @@ namespace lexicon_Garage2.Models
         {
             ParkingTime = DateTime.Now;
         }
+
+        public double Size
+        {
+            get 
+            {
+                switch (VehicleType)
+                {
+                    case VehicleType.Car:
+                        return 1;
+                    case VehicleType.Bus:
+                        return 2;
+                    case VehicleType.Airplane:
+                        return 5;
+                    case VehicleType.Boat:
+                        return 3;
+                    case VehicleType.Motorcycle:
+                        return 1;
+                    default:
+                        return 0;
+                }
+            }
+        }
+
+        public static double GetSizeOfVehicleType(VehicleType type)
+        {
+            switch (type)
+            {
+                case VehicleType.Car:
+                    return 1;
+                case VehicleType.Bus:
+                    return 2;
+                case VehicleType.Airplane:
+                    return 5;
+                case VehicleType.Boat:
+                    return 3;
+                case VehicleType.Motorcycle:
+                    return 1;
+                default:
+                    return 0;
+            }
+        }
     }
 
     public enum VehicleType

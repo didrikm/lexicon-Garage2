@@ -9,18 +9,32 @@ namespace lexicon_Garage2.Controllers
     public class VehiclesController : Controller
     {
         private readonly lexicon_Garage2Context _context;
-        private const int MaxCapacity = 100;
+        private const double MaxCapacity = 5;
         public VehiclesController(lexicon_Garage2Context context)
         {
             _context = context;
         }
 
-        public int GetAvailableSpots()
+        private async Task<double> GetUccupiedSpots()
         {
-            int occupiedSpots = _context.Vehicle.Count();
-            return MaxCapacity - occupiedSpots;
+            double occupiedSpots = 0;
+            var list = await _context.Vehicle.AsNoTracking().ToListAsync();
+            foreach (var vehicle in list)
+            {
+                occupiedSpots += vehicle.Size;
+            }
+            return occupiedSpots;
         }
 
+        private async Task<double> GetAvailableSpots()
+        {
+            return MaxCapacity - await GetUccupiedSpots();
+        }
+
+        private async Task<bool> CheckIfVehicleFitsInGarage(Vehicle vehicle)
+        {
+            return await GetAvailableSpots() >= vehicle.Size;
+        }
 
         // GET: Vehicles
         public async Task<IActionResult> Admin()
@@ -41,7 +55,7 @@ namespace lexicon_Garage2.Controllers
         // GET: Garage
         public async Task<IActionResult> Garage(string? searchTerm = null, string sortColumn = "ArrivalTime", string sortOrder = "asc", string? timeFilter = null)
         {
-            ViewBag.AvailableSpots = GetAvailableSpots();
+            ViewBag.AvailableSpots = await GetAvailableSpots();
             IQueryable<Vehicle> vehicles = _context.Vehicle;
 
             if (!string.IsNullOrEmpty(searchTerm))
@@ -117,9 +131,15 @@ namespace lexicon_Garage2.Controllers
         )
         {
             // Check if there are available spots
-            if (GetAvailableSpots() <= 0)
+            if (await GetAvailableSpots() <= 0)
             {
                 TempData["ErrorMessage"] = "The garage is full. No more spots are available!";
+                return RedirectToAction(nameof(Garage));
+            }
+            var fitsInGarage = await CheckIfVehicleFitsInGarage(vehicle);
+            if (!fitsInGarage)
+            {
+                TempData["ErrorMessage"] = $"The garage does not have enough spots for a {vehicle.VehicleType.ToString().ToLower()}!";
                 return RedirectToAction(nameof(Garage));
             }
 
@@ -195,6 +215,17 @@ namespace lexicon_Garage2.Controllers
 
                     // Bevara originalvärdet för ArrivalTime
                     vehicle.ParkingTime = existingVehicle.ParkingTime;
+
+                    //Kolla om den nya storleken kommer bli för stor
+                    if (vehicle.Size > existingVehicle.Size)
+                    {
+                        double sizeDifference = vehicle.Size - existingVehicle.Size;
+                        if (sizeDifference > await GetAvailableSpots())
+                        {
+                            TempData["ErrorMessage"] = $"The garage does not have enough spots for a {vehicle.VehicleType.ToString().ToLower()}!";
+                            return View(vehicle);
+                        }
+                    }
 
                     _context.Update(vehicle);
                     await _context.SaveChangesAsync();

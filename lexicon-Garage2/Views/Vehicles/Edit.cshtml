@@ -15,9 +15,12 @@
 
                     <input type="hidden" asp-for="Id" />
 
+                    @* Dropdown list for vehicle type *@
                     <div class="form-group mb-3">
                         <label asp-for="VehicleType" class="form-label text-dark fw-bold"></label>
-                        <input asp-for="VehicleType" class="form-control border-dark text-dark" />
+                        <select asp-for="VehicleType" class="form-control border-dark text-dark" asp-items="@Html.GetEnumSelectList<VehicleType>()">
+                            <option value="" disabled selected>Select Type</option>
+                        </select>
                         <span asp-validation-for="VehicleType" class="text-danger"></span>
                     </div>
 

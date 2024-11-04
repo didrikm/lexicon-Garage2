@@ -254,13 +254,12 @@ namespace lexicon_Garage2.Controllers
             {
                 NumberOfVehiclesParked = vehicles.Count,
                 NumberOfWheelsInGarage = vehicles.Sum(v => v.NumberOfWheels),
-                UnrealizedParkingRevenue = vehicles.Sum(v => (decimal)(DateTime.Now - v.ParkingTime).TotalHours) * ParkingHourlyPrice
-                // TODO: lägg till AccumulatedParkingRevenue
+                UnrealizedParkingRevenue = vehicles.Sum(v => (decimal)(DateTime.Now - v.ParkingTime).TotalHours) * ParkingHourlyPrice,
+                AccumulatedParkingRevenueView = AccumulatedParkingRevenue
             };
 
-            Console.WriteLine(vehicleStats.UnrealizedParkingRevenue);
 
-            return RedirectToAction("Garage");
+            return View(vehicleStats);
         }
 
         private bool VehicleExists(int id)

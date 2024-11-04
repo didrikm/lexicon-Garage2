@@ -1,0 +1,27 @@
+﻿@model StatisticsViewModel
+
+@{
+    ViewData["Title"] = "Statistics";
+}
+
+<h2 class="text-center mb-4 text-dark fw-bold">Statistics</h2>
+
+<div class="d-flex justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm border-0" style="background-color: #FEFEFA;">
+            <div class="card-body p-4">
+                @* <h4 class="text-dark fw-bold">Parking Details</h4> *@
+                @* <hr /> *@
+
+                <p><strong class="text-dark fw-semibold">Number of vehicles parked:</strong> @Model.NumberOfVehiclesParked</p>
+                <p><strong class="text-dark fw-semibold">Number of wheels in garage:</strong> @Model.NumberOfWheelsInGarage</p>
+                <p><strong class="text-dark fw-semibold">Unrealized parking revenue:</strong> @Model.UnrealizedParkingRevenue.ToString("C")</p>
+                <p><strong class="text-dark fw-semibold">Accumulated parking revenue:</strong> @Model.AccumulatedParkingRevenueView.ToString("C")</p>
+
+                <div class="text-center mt-4">
+                    <a asp-action="Garage" class="btn btn-secondary px-4 me-3">Return to Garage</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

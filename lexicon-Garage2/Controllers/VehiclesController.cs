@@ -1,4 +1,5 @@
 ﻿using lexicon_Garage2.Data;
+using lexicon_Garage2.Migrations;
 using lexicon_Garage2.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -9,6 +10,10 @@ namespace lexicon_Garage2.Controllers
     public class VehiclesController : Controller
     {
         private readonly lexicon_Garage2Context _context;
+
+        public readonly decimal ParkingHourlyPrice = 100;
+        public static decimal AccumulatedParkingRevenue {  get; set; }
+
         private const int MaxCapacity = 100;
         public VehiclesController(lexicon_Garage2Context context)
         {
@@ -28,16 +33,7 @@ namespace lexicon_Garage2.Controllers
             return View(await _context.Vehicle.ToListAsync());
         }
 
-        // GET: Filter data
-        public async Task<IActionResult> Filter(string registrationNumber)
-        {
-            var model = string.IsNullOrWhiteSpace(registrationNumber)
-                ? _context.Vehicle
-                : _context.Vehicle.Where(m => m.RegistrationNumber.Contains(registrationNumber));
 
-            return View(nameof(Garage), await model.ToListAsync());
-        }
-   
         // GET: Garage
         public async Task<IActionResult> Garage(string? searchTerm = null, string sortColumn = "ArrivalTime", string sortOrder = "asc", string? timeFilter = null)
         {
@@ -245,7 +241,8 @@ namespace lexicon_Garage2.Controllers
                 _context.Vehicle.Remove(vehicle);
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Parking has ended.";
-                var receiptViewModel = new ReceiptViewModel(vehicle);
+                var receiptViewModel = new ReceiptViewModel(vehicle, ParkingHourlyPrice);
+                AccumulatedParkingRevenue += receiptViewModel.Total;
                 return View("Receipt", receiptViewModel);
             }
             else
@@ -254,6 +251,22 @@ namespace lexicon_Garage2.Controllers
             }
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Garage));
+        }
+
+        // GET: Statistics
+        public async Task<IActionResult> Statistics()
+        {
+            var vehicles = await _context.Vehicle.ToListAsync();
+            var vehicleStats = new StatisticsViewModel
+            {
+                NumberOfVehiclesParked = vehicles.Count,
+                NumberOfWheelsInGarage = vehicles.Sum(v => v.NumberOfWheels),
+                UnrealizedParkingRevenue = vehicles.Sum(v => (decimal)(DateTime.Now - v.ParkingTime).TotalHours) * ParkingHourlyPrice,
+                AccumulatedParkingRevenueView = AccumulatedParkingRevenue
+            };
+
+
+            return View(vehicleStats);
         }
 
         private bool VehicleExists(int id)

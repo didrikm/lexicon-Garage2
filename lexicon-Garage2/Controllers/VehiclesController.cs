@@ -241,6 +241,19 @@ namespace lexicon_Garage2.Controllers
             return RedirectToAction(nameof(Garage));
         }
 
+        // GET: Statistics
+        public async Task<IActionResult> Statistics()
+        {
+            IQueryable<Vehicle> vehicles = _context.Vehicle;
+            Console.WriteLine(vehicles.Count());
+            Console.WriteLine(vehicles.Sum(v => v.NumberOfWheels));
+            return RedirectToAction("Garage");
+            //Count
+            //foreach number of wheels
+            //count * parkedtime * price
+            //global variabel för total parkeringsrevenue?
+        }
+
         private bool VehicleExists(int id)
         {
             return _context.Vehicle.Any(e => e.Id == id);

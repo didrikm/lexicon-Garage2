@@ -235,6 +235,7 @@ namespace lexicon_Garage2.Controllers
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Parking has ended.";
                 var receiptViewModel = new ReceiptViewModel(vehicle, ParkingHourlyPrice);
+                AccumulatedParkingRevenue += receiptViewModel.Total;
                 return View("Receipt", receiptViewModel);
             }
             else

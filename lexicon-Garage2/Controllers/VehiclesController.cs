@@ -276,18 +276,36 @@ namespace lexicon_Garage2.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var vehicle = await _context.Vehicle.FindAsync(id);
+
             if (vehicle != null)
             {
+                // Capture the vehicle data for the receipt before deletion
+                var receiptViewModel = new ReceiptViewModel
+                {
+                    Id = vehicle.Id,
+                    VehicleType = vehicle.VehicleType,
+                    RegistrationNumber = vehicle.RegistrationNumber,
+                    ArrivalTime = vehicle.ParkingTime, // Use ParkingTime if ArrivalTime does not exist
+                    ParkingSpot = vehicle.ParkingSpot,
+                };
+
+                // Remove the vehicle from the database
                 _context.Vehicle.Remove(vehicle);
                 await _context.SaveChangesAsync();
+
+                // Set a success message with parking spot information
                 TempData["SuccessMessage"] =
-                    $"Vehicle has left. Spot {vehicle.ParkingSpot} is now available.";
-                return RedirectToAction(nameof(Garage));
+                    $"Vehicle with registration {vehicle.RegistrationNumber} has left. Spot {vehicle.ParkingSpot} is now available.";
+
+                // Return the receipt view with the populated receipt model
+                return View("Receipt", receiptViewModel);
             }
             else
             {
+                // Handle case if the vehicle is not found
                 TempData["ErrorMessage"] = "Could not find the vehicle.";
             }
+
             return RedirectToAction(nameof(Garage));
         }
 

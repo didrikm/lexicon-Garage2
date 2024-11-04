@@ -73,7 +73,7 @@ namespace lexicon_Garage2.Controllers
                 "RegistrationNumber" => sortOrder == "asc" ? vehicles.OrderBy(v => v.RegistrationNumber) : vehicles.OrderByDescending(v => v.RegistrationNumber),
                 "VehicleType" => sortOrder == "asc" ? vehicles.OrderBy(v => v.VehicleType) : vehicles.OrderByDescending(v => v.VehicleType),
                 "ArrivalTime" => sortOrder == "asc" ? vehicles.OrderBy(v => v.ParkingTime) : vehicles.OrderByDescending(v => v.ParkingTime),
-                _ => vehicles.OrderBy(v => v.RegistrationNumber)
+                _ => vehicles.OrderBy(v => v.ParkingTime)
             };
 
             var vehicleViewModels = await vehicles.Select(vehicle => new VehicleViewModel(vehicle)).ToListAsync();

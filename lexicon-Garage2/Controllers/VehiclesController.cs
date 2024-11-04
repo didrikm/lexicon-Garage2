@@ -9,7 +9,7 @@ namespace lexicon_Garage2.Controllers
     public class VehiclesController : Controller
     {
         private readonly lexicon_Garage2Context _context;
-        private const int MaxCapacity = 1;
+        private const int MaxCapacity = 100;
         public VehiclesController(lexicon_Garage2Context context)
         {
             _context = context;

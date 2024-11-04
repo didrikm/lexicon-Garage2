@@ -9,10 +9,36 @@ namespace lexicon_Garage2.Controllers
     public class VehiclesController : Controller
     {
         private readonly lexicon_Garage2Context _context;
-        private const int MaxCapacity = 100;
+        private const int MaxCapacity = 1;
         public VehiclesController(lexicon_Garage2Context context)
         {
             _context = context;
+        }
+
+        public class ParkingSpotViewModel
+        {
+            public int SpotNumber { get; set; }
+            public bool IsOccupied { get; set; }
+        }
+
+        public async Task<List<ParkingSpotViewModel>> GetParkingStatusAsync()
+        {
+            var occupiedSpots = await _context.Vehicle
+                .Where(v => v.ParkingSpot.HasValue)
+                .Select(v => v.ParkingSpot.Value)
+                .ToListAsync();
+
+            var parkingStatus = new List<ParkingSpotViewModel>();
+            for (int i = 1; i <= MaxCapacity; i++)
+            {
+                parkingStatus.Add(new ParkingSpotViewModel
+                {
+                    SpotNumber = i,
+                    IsOccupied = occupiedSpots.Contains(i)
+                });
+            }
+
+            return parkingStatus;
         }
 
         public int GetAvailableSpots()
@@ -20,7 +46,24 @@ namespace lexicon_Garage2.Controllers
             int occupiedSpots = _context.Vehicle.Count();
             return MaxCapacity - occupiedSpots;
         }
+        // Metod för att hitta nästa lediga platsnummer
+        private int? GetNextAvailableSpot()
+        {
+            var occupiedSpots = _context.Vehicle
+                .Where(v => v.ParkingSpot.HasValue)
+                .Select(v => v.ParkingSpot.Value)
+                .ToList();
 
+            for (int i = 1; i <= MaxCapacity; i++)
+            {
+                if (!occupiedSpots.Contains(i))
+                {
+                    return i; // Returnera första lediga plats
+                }
+            }
+
+            return null; // Om alla platser är upptagna
+        }
 
         // GET: Vehicles
         public async Task<IActionResult> Admin()
@@ -42,6 +85,8 @@ namespace lexicon_Garage2.Controllers
         public async Task<IActionResult> Garage(string? searchTerm = null, string sortColumn = "ArrivalTime", string sortOrder = "asc", string? timeFilter = null)
         {
             ViewBag.AvailableSpots = GetAvailableSpots();
+            ViewBag.ParkingStatus = await GetParkingStatusAsync(); // Lägger till status för lediga/upptagna platser
+
             IQueryable<Vehicle> vehicles = _context.Vehicle;
 
             if (!string.IsNullOrEmpty(searchTerm))
@@ -122,11 +167,18 @@ namespace lexicon_Garage2.Controllers
                 TempData["ErrorMessage"] = "The garage is full. No more spots are available!";
                 return RedirectToAction(nameof(Garage));
             }
-
+            // Hämta nästa tillgängliga parkeringsplats
+            var nextAvailableSpot = GetNextAvailableSpot();
+            if (nextAvailableSpot == null)
+            {
+                TempData["ErrorMessage"] = "The garage is full - no available spots.";
+                return RedirectToAction(nameof(Garage));
+            }
             if (ModelState.IsValid)
             {
                 try
                 {
+                    vehicle.ParkingSpot = nextAvailableSpot; // Tilldela den lediga platsen till fordonet
                     _context.Add(vehicle);
                     await _context.SaveChangesAsync();
                     TempData["SuccessMessage"] = "Parking has started.";

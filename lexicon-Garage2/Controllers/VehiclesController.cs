@@ -31,7 +31,7 @@ namespace lexicon_Garage2.Controllers
         {
             var occupiedSpots = await _context
                 .Vehicle.Where(v => v.ParkingSpot.HasValue)
-                .Select(v => v.ParkingSpot!.Value)
+                .Select(v => v.ParkingSpot.Value)
                 .ToListAsync();
 
             var parkingStatus = new List<ParkingSpotViewModel>();
@@ -60,7 +60,7 @@ namespace lexicon_Garage2.Controllers
         {
             var occupiedSpots = _context
                 .Vehicle.Where(v => v.ParkingSpot.HasValue)
-                .Select(v => v.ParkingSpot!.Value)
+                .Select(v => v.ParkingSpot.Value)
                 .ToList();
 
             for (int i = 1; i <= MaxCapacity; i++)
@@ -138,6 +138,15 @@ namespace lexicon_Garage2.Controllers
             ViewData["CurrentSort"] = $"{sortColumn}_{sortOrder}";
 
             return View(vehicleViewModels);
+        }
+
+        public async Task<IActionResult> Filter(string registrationNumber)
+        {
+            var model = string.IsNullOrWhiteSpace(registrationNumber)
+                ? _context.Vehicle
+                : _context.Vehicle.Where(m => m.RegistrationNumber.Contains(registrationNumber));
+
+            return View(nameof(Admin), await model.ToListAsync());
         }
 
         // GET: Vehicles/Details/5

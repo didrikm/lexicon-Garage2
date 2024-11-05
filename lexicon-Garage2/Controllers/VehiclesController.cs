@@ -1,5 +1,4 @@
 ﻿using lexicon_Garage2.Data;
-using lexicon_Garage2.Migrations;
 using lexicon_Garage2.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;

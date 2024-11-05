@@ -71,7 +71,27 @@
                         </select>
                     </form>
                 </th>
-                <th>Parking Spot</th>
+ <th>
+                    
+                        <a asp-action="Garage"
+                           asp-route-sortColumn="ParkingSpot"
+                           asp-route-sortOrder="@(ViewData["CurrentSort"]?.ToString() == "ParkingSpot_asc" ? "desc" : "asc")"
+                           class="text-dark me-2">
+                            Parking Spot
+                            @(ViewData["CurrentSort"] ?.ToString() == "ParkingSpot_asc" ? "▼" : "▲")
+                        </a>
+<form asp-action="Garage" method="get" class="d-inline">
+    <select name="sortOrder" class="form-control form-select" onchange="this.form.submit()">
+        <option value="asc">Ascending</option>
+        <option value="desc">Descending</option>
+    </select>
+    <input type="hidden" name="sortColumn" value="ParkingSpot" />
+</form>
+                   
+                </th>
+
+
+
             </tr>
         </thead>
       

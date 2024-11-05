@@ -132,6 +132,9 @@ namespace lexicon_Garage2.Controllers
                 "ArrivalTime" => sortOrder == "asc"
                     ? vehicles.OrderBy(v => v.ParkingTime)
                     : vehicles.OrderByDescending(v => v.ParkingTime),
+                "ParkingSpot" => sortOrder == "asc"
+                    ? vehicles.OrderBy(v => v.ParkingSpot)
+                    : vehicles.OrderByDescending(v => v.ParkingSpot),
                 _ => vehicles.OrderBy(v => v.ParkingTime),
             };
 

@@ -4,107 +4,116 @@
     ViewData["Title"] = "Garage";
 }
 
-<h1>@ViewData["Title"]</h1>
+<div class="container mt-5">
+    <h1 class="text-center">@ViewData["Title"]</h1>
 
-@* <p>
-    <a asp-action="Create">Park vehicle</a>
-</p> *@
-<div class="alert alert-info">
-    There are @ViewBag.AvailableSpots spots available in the garage.
-</div>
+    <div class="alert alert-info text-center">
+        There are <strong>@ViewBag.AvailableSpots</strong> spots available in the garage.
+    </div>
 
-@if (ViewBag.AvailableSpots > 0)
-{
-    <button type="button" class="btn btn-secondary px-4 me-3" onclick="location.href='@Url.Action("Create", "Vehicles")'">
-        Park vehicle
-    </button>
-}
-
-<button type="button" class="btn btn-secondary px-4 me-3" onclick="location.href='@Url.Action("Statistics", "Vehicles")'">
-    Garage Statistics
-</button>
-
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                <a asp-action="Garage" asp-route-sortColumn="VehicleType" asp-route-sortOrder="@(ViewData["CurrentSort"]?.ToString() == "VehicleType_asc" ? "desc" : "asc")">
-                    @Html.DisplayNameFor(model => model.VehicleType)
-                    @(ViewData["CurrentSort"]?.ToString() == "VehicleType_asc" ? "▼" : "▲")
-                </a>
-                <form asp-action="Garage">
-                    <input type="text" name="searchTerm" placeholder="Filter by vehicle type ⤶" class="form-control filter-input" />
-                </form>
-            </th>
-            <th>
-                <a asp-action="Garage" asp-route-sortColumn="RegistrationNumber" asp-route-sortOrder="@(ViewData["CurrentSort"]?.ToString() == "RegistrationNumber_asc" ? "desc" : "asc")">
-                    @Html.DisplayNameFor(model => model.RegistrationNumber)
-                    @(ViewData["CurrentSort"]?.ToString() == "RegistrationNumber_asc" ? "▼" : "▲")
-                </a>
-                <form asp-action="Garage">
-                    <input type="text" name="searchTerm" placeholder="Filter by registration number ⤶" class="form-control filter-input" />
-                </form>
-            </th>
-            <th>
-                <a asp-action="Garage" asp-route-sortColumn="ArrivalTime" asp-route-sortOrder="@(ViewData["CurrentSort"]?.ToString() == "ArrivalTime_asc" ? "desc" : "asc")">
-                    @Html.DisplayNameFor(model => model.ArrivalTime)
-                    @(ViewData["CurrentSort"]?.ToString() == "ArrivalTime_asc" ? "▼" : "▲")
-                </a>
-                <form asp-action="Garage" method="get">
-                    <select name="timeFilter" class="form-control form-select" onchange="this.form.submit()">
-                        <option value="">Filter by time</option>
-                        <option value="minute">Past Minute</option>
-                        <option value="hour">Past Hour</option>
-                        <option value="day">Past Day</option>
-                    </select>
-                </form>
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
+    <div class="d-flex justify-content-center mb-3">
+        @if (ViewBag.AvailableSpots > 0)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.VehicleType)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.RegistrationNumber)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ArrivalTime)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Check out</a>
-                </td>
-            </tr>
+            <button type="button" class="btn btn-success px-4 me-3" onclick="location.href='@Url.Action("Create", "Vehicles")'">
+                Park Vehicle
+            </button>
         }
-    </tbody>
-</table>
-<h2>Parking Spot Overview</h2>
-<div class="row">
-    @foreach (var spot in ViewBag.ParkingStatus)
-    {
-        <div class="col-2 mb-2">
-            <div class="p-2 border text-center @(spot.IsOccupied ? "bg-danger text-white" : "bg-success text-white")">
-                @if (spot.IsOccupied)
-                {
-                    <strong>@spot.RegistrationNumber</strong> <!-- Show Registration Number if occupied -->
-                }
-                else
-                {
-                    <strong>Spot @spot.SpotNumber</strong> <!-- Show spot number if available -->
-                }
-                <br />
-                @(spot.IsOccupied ? "Occupied" : "Available")
+
+        <button type="button" class="btn btn-primary px-4 me-3" onclick="location.href='@Url.Action("Statistics", "Vehicles")'">
+            Garage Statistics
+        </button>
+    </div>
+
+    <table class="table table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>
+                    <a asp-action="Garage"
+                       asp-route-sortColumn="VehicleType"
+                       asp-route-sortOrder="@(ViewData["CurrentSort"]?.ToString() == "VehicleType_asc" ? "desc" : "asc")"
+                       class="text-dark">
+                        <!-- Use Bootstrap's text-dark class -->
+                        @Html.DisplayNameFor(model => model.VehicleType)
+                        @(ViewData["CurrentSort"]?.ToString() == "VehicleType_asc" ? "▼" : "▲")
+                    </a>
+                    <form asp-action="Garage" class="d-inline">
+                        <input type="text" name="searchTerm" placeholder="Filter by vehicle type" class="form-control filter-input" />
+                    </form>
+                </th>
+                <th>
+                    <a asp-action="Garage"
+                       asp-route-sortColumn="RegistrationNumber"
+                       asp-route-sortOrder="@(ViewData["CurrentSort"]?.ToString() == "RegistrationNumber_asc" ? "desc" : "asc")"
+                       class="text-dark">
+                        <!-- Use Bootstrap's text-dark class -->
+                        @Html.DisplayNameFor(model => model.RegistrationNumber)
+                        @(ViewData["CurrentSort"]?.ToString() == "RegistrationNumber_asc" ? "▼" : "▲")
+                    </a>
+                    <form asp-action="Garage" class="d-inline">
+                        <input type="text" name="searchTerm" placeholder="Filter by registration number" class="form-control filter-input" />
+                    </form>
+                </th>
+                <th>
+                    <a asp-action="Garage"
+                       asp-route-sortColumn="ArrivalTime"
+                       asp-route-sortOrder="@(ViewData["CurrentSort"]?.ToString() == "ArrivalTime_asc" ? "desc" : "asc")"
+                       class="text-dark">
+                        <!-- Use Bootstrap's text-dark class -->
+                        @Html.DisplayNameFor(model => model.ArrivalTime)
+                        @(ViewData["CurrentSort"]?.ToString() == "ArrivalTime_asc" ? "▼" : "▲")
+                    </a>
+                    <form asp-action="Garage" method="get" class="d-inline">
+                        <select name="timeFilter" class="form-control form-select" onchange="this.form.submit()">
+                            <option value="">Filter by time</option>
+                            <option value="minute">Past Minute</option>
+                            <option value="hour">Past Hour</option>
+                            <option value="day">Past Day</option>
+                        </select>
+                    </form>
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+      
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.VehicleType)</td>
+                    <td>@Html.DisplayFor(modelItem => item.RegistrationNumber)</td>
+                    <td>@Html.DisplayFor(modelItem => item.ArrivalTime)</td>
+                    <td>
+                        <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                        <a class="btn btn-sm btn-info" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                        <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@item.Id">Check out</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <h2 class="mt-5">Parking Spot Overview</h2>
+    <div class="row">
+        @foreach (var spot in ViewBag.ParkingStatus)
+        {
+            <div class="col-2 mb-2">
+                <div class="p-3 border text-center @(spot.IsOccupied ? "bg-danger text-white" : "bg-success text-white")">
+                    @if (spot.IsOccupied)
+                    {
+                        <strong>@spot.RegistrationNumber</strong>
+                    }
+                    else
+                    {
+                        <strong>Spot @spot.SpotNumber</strong>
+                    }
+                    <br />
+                    @(spot.IsOccupied ? "Occupied" : "Available")
+                </div>
             </div>
-        </div>
-    }
+        }
+    </div>
 </div>
+
 @section Scripts {
     <script>
         document.querySelectorAll('.filter-input').forEach(input => {

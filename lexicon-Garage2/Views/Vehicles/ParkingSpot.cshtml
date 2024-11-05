@@ -1,0 +1,31 @@
+﻿@model IEnumerable<ParkingSpotViewModel>
+
+
+@{
+    ViewData["Title"] = "Parking Spot Overview";
+}
+<h2 class="my-5">Parking Spot Overview</h2>
+
+<div class="alert alert-info text-center">
+    There are <strong>@ViewBag.AvailableSpots</strong> spots available in the garage.
+</div>
+
+<div class="row">
+    @foreach (var spot in Model) // Change ViewBag to Model
+    {
+        <div class="col-2 mb-2">
+            <div class="p-2 border text-center @(spot.IsOccupied ? "bg-danger text-white" : "bg-success text-white")">
+                @if (spot.IsOccupied)
+                {
+                    <strong>@spot.RegistrationNumber</strong> <!-- Show Registration Number if occupied -->
+                }
+                else
+                {
+                    <strong>Spot @spot.SpotNumber</strong> <!-- Show spot number if available -->
+                }
+                <br />
+                @(spot.IsOccupied ? "Occupied" : "Available")
+            </div>
+        </div>
+    }
+</div>

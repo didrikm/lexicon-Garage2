@@ -14,7 +14,7 @@ namespace lexicon_Garage2.Controllers
         public readonly decimal ParkingHourlyPrice = 100;
         public static decimal AccumulatedParkingRevenue { get; set; }
 
-        private const int MaxCapacity = 6;
+        private const int MaxCapacity = 10;
 
         public VehiclesController(lexicon_Garage2Context context)
         {
@@ -68,6 +68,14 @@ namespace lexicon_Garage2.Controllers
             }
 
             return null; // Om alla platser är upptagna
+        }
+
+        public async Task<IActionResult> ParkingSpot()
+        {
+            ViewBag.AvailableSpots = GetAvailableSpots();
+            ViewBag.ParkingStatus = await GetParkingStatusAsync();
+            var parkingStatus = await GetParkingStatusAsync();
+            return View(parkingStatus); // Pass the list of ParkingSpotViewModel
         }
 
         // GET: Vehicles

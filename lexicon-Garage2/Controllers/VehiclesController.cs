@@ -194,7 +194,7 @@ namespace lexicon_Garage2.Controllers
 
                     _context.Update(vehicle);
                     await _context.SaveChangesAsync();
-                    TempData["SuccessMessage"] = "The vehicle has been updated.";
+                    TempData["SuccessMessage"] = $"Vehicle {vehicle.RegistrationNumber} has been updated.";
                 }
                 catch (DbUpdateConcurrencyException)
                 {

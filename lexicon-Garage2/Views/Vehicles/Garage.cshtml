@@ -91,7 +91,14 @@
     {
         <div class="col-2 mb-2">
             <div class="p-2 border text-center @(spot.IsOccupied ? "bg-danger text-white" : "bg-success text-white")">
-                Spot @spot.SpotNumber
+                @if (spot.IsOccupied)
+                {
+                    <strong>@spot.RegistrationNumber</strong> <!-- Show Registration Number if occupied -->
+                }
+                else
+                {
+                    <strong>Spot @spot.SpotNumber</strong> <!-- Show spot number if available -->
+                }
                 <br />
                 @(spot.IsOccupied ? "Occupied" : "Available")
             </div>

@@ -21,27 +21,23 @@ namespace lexicon_Garage2.Controllers
             _context = context;
         }
 
-        public class ParkingSpotViewModel
-        {
-            public int SpotNumber { get; set; }
-            public bool IsOccupied { get; set; }
-        }
-
         public async Task<List<ParkingSpotViewModel>> GetParkingStatusAsync()
         {
-            var occupiedSpots = await _context
-                .Vehicle.Where(v => v.ParkingSpot.HasValue)
-                .Select(v => v.ParkingSpot.Value)
-                .ToListAsync();
+            var vehicles = await _context.Vehicle.Where(v => v.ParkingSpot.HasValue).ToListAsync();
 
             var parkingStatus = new List<ParkingSpotViewModel>();
             for (int i = 1; i <= MaxCapacity; i++)
             {
+                var vehicleInSpot = vehicles.FirstOrDefault(v => v.ParkingSpot == i);
+
                 parkingStatus.Add(
                     new ParkingSpotViewModel
                     {
                         SpotNumber = i,
-                        IsOccupied = occupiedSpots.Contains(i),
+                        IsOccupied = vehicleInSpot != null,
+                        RegistrationNumber =
+                            vehicleInSpot?.RegistrationNumber // Assign registration number if occupied
+                        ,
                     }
                 );
             }
@@ -241,6 +237,7 @@ namespace lexicon_Garage2.Controllers
         // POST: Vehicles/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Vehicles/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(
@@ -258,19 +255,23 @@ namespace lexicon_Garage2.Controllers
             {
                 try
                 {
+                    // Retrieve the original vehicle data, including the parking spot
                     var existingVehicle = await _context
                         .Vehicle.AsNoTracking()
                         .FirstOrDefaultAsync(v => v.Id == id);
+
                     if (existingVehicle == null)
                     {
                         return NotFound();
                     }
 
-                    // Bevara originalvärdet för ArrivalTime
+                    // Preserve original ParkingTime and ParkingSpot
                     vehicle.ParkingTime = existingVehicle.ParkingTime;
+                    vehicle.ParkingSpot = existingVehicle.ParkingSpot;
 
                     _context.Update(vehicle);
                     await _context.SaveChangesAsync();
+
                     TempData["SuccessMessage"] = "The vehicle has been updated.";
                 }
                 catch (DbUpdateConcurrencyException)
@@ -286,6 +287,7 @@ namespace lexicon_Garage2.Controllers
                 }
                 return RedirectToAction(nameof(Garage));
             }
+
             TempData["ErrorMessage"] = "Could not update. Please check your inputs.";
             return View(vehicle);
         }
@@ -324,13 +326,8 @@ namespace lexicon_Garage2.Controllers
                 TempData["SuccessMessage"] = "Parking has ended.";
 
                 // Create the receipt view model with the parking spot number
-                var receiptViewModel = new ReceiptViewModel(vehicle, ParkingHourlyPrice)
-                {
-                    ParkingSpotNumber =
-                        parkingSpotNumber
-                        ?? 0 // Pass the parking spot number
-                    ,
-                };
+                var receiptViewModel = new ReceiptViewModel(vehicle, ParkingHourlyPrice);
+                receiptViewModel.ParkingSpotNumber = parkingSpotNumber ?? 0;
 
                 AccumulatedParkingRevenue += receiptViewModel.Total;
                 return View("Receipt", receiptViewModel);

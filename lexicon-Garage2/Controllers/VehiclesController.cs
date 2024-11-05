@@ -14,7 +14,7 @@ namespace lexicon_Garage2.Controllers
         public readonly decimal ParkingHourlyPrice = 100;
         public static decimal AccumulatedParkingRevenue { get; set; }
 
-        private const int MaxCapacity = 100;
+        private const int MaxCapacity = 6;
 
         public VehiclesController(lexicon_Garage2Context context)
         {

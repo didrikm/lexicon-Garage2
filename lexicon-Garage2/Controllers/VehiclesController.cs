@@ -11,9 +11,10 @@ namespace lexicon_Garage2.Controllers
         private readonly lexicon_Garage2Context _context;
 
         public readonly decimal ParkingHourlyPrice = 100;
-        public static decimal AccumulatedParkingRevenue {  get; set; }
+        public static decimal AccumulatedParkingRevenue { get; set; }
 
         private const int MaxCapacity = 100;
+
         public VehiclesController(lexicon_Garage2Context context)
         {
             _context = context;
@@ -25,16 +26,19 @@ namespace lexicon_Garage2.Controllers
             return MaxCapacity - occupiedSpots;
         }
 
-
         // GET: Vehicles
         public async Task<IActionResult> Admin()
         {
             return View(await _context.Vehicle.ToListAsync());
         }
 
-
         // GET: Garage
-        public async Task<IActionResult> Garage(string? searchTerm = null, string sortColumn = "ArrivalTime", string sortOrder = "asc", string? timeFilter = null)
+        public async Task<IActionResult> Garage(
+            string? searchTerm = null,
+            string sortColumn = "ArrivalTime",
+            string sortOrder = "asc",
+            string? timeFilter = null
+        )
         {
             ViewBag.AvailableSpots = GetAvailableSpots();
             IQueryable<Vehicle> vehicles = _context.Vehicle;
@@ -59,19 +63,27 @@ namespace lexicon_Garage2.Controllers
                     "minute" => vehicles.Where(v => v.ParkingTime >= now.AddMinutes(-1)),
                     "hour" => vehicles.Where(v => v.ParkingTime >= now.AddHours(-1)),
                     "day" => vehicles.Where(v => v.ParkingTime >= now.AddDays(-1)),
-                    _ => vehicles
+                    _ => vehicles,
                 };
             }
 
             vehicles = sortColumn switch
             {
-                "RegistrationNumber" => sortOrder == "asc" ? vehicles.OrderBy(v => v.RegistrationNumber) : vehicles.OrderByDescending(v => v.RegistrationNumber),
-                "VehicleType" => sortOrder == "asc" ? vehicles.OrderBy(v => v.VehicleType) : vehicles.OrderByDescending(v => v.VehicleType),
-                "ArrivalTime" => sortOrder == "asc" ? vehicles.OrderBy(v => v.ParkingTime) : vehicles.OrderByDescending(v => v.ParkingTime),
-                _ => vehicles.OrderBy(v => v.ParkingTime)
+                "RegistrationNumber" => sortOrder == "asc"
+                    ? vehicles.OrderBy(v => v.RegistrationNumber)
+                    : vehicles.OrderByDescending(v => v.RegistrationNumber),
+                "VehicleType" => sortOrder == "asc"
+                    ? vehicles.OrderBy(v => v.VehicleType)
+                    : vehicles.OrderByDescending(v => v.VehicleType),
+                "ArrivalTime" => sortOrder == "asc"
+                    ? vehicles.OrderBy(v => v.ParkingTime)
+                    : vehicles.OrderByDescending(v => v.ParkingTime),
+                _ => vehicles.OrderBy(v => v.ParkingTime),
             };
 
-            var vehicleViewModels = await vehicles.Select(vehicle => new VehicleViewModel(vehicle)).ToListAsync();
+            var vehicleViewModels = await vehicles
+                .Select(vehicle => new VehicleViewModel(vehicle))
+                .ToListAsync();
 
             ViewData["CurrentSort"] = $"{sortColumn}_{sortOrder}";
 
@@ -124,7 +136,8 @@ namespace lexicon_Garage2.Controllers
                 {
                     _context.Add(vehicle);
                     await _context.SaveChangesAsync();
-                    TempData["SuccessMessage"] = $"Parking has started for vehicle {vehicle.RegistrationNumber}";
+                    TempData["SuccessMessage"] =
+                        $"Parking has started for vehicle {vehicle.RegistrationNumber}";
                     return RedirectToAction(nameof(Garage));
                 }
                 catch (DbUpdateException ex)
@@ -193,7 +206,8 @@ namespace lexicon_Garage2.Controllers
 
                     _context.Update(vehicle);
                     await _context.SaveChangesAsync();
-                    TempData["SuccessMessage"] = $"Vehicle {vehicle.RegistrationNumber} has been updated.";
+                    TempData["SuccessMessage"] =
+                        $"Vehicle {vehicle.RegistrationNumber} has been updated.";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -239,7 +253,8 @@ namespace lexicon_Garage2.Controllers
             {
                 _context.Vehicle.Remove(vehicle);
                 await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = $"Parking has ended for vehicle {vehicle.RegistrationNumber}";
+                TempData["SuccessMessage"] =
+                    $"Parking has ended for vehicle {vehicle.RegistrationNumber}";
                 var receiptViewModel = new ReceiptViewModel(vehicle, ParkingHourlyPrice);
                 AccumulatedParkingRevenue += receiptViewModel.Total;
                 return View("Receipt", receiptViewModel);
@@ -260,10 +275,11 @@ namespace lexicon_Garage2.Controllers
             {
                 NumberOfVehiclesParked = vehicles.Count,
                 NumberOfWheelsInGarage = vehicles.Sum(v => v.NumberOfWheels),
-                UnrealizedParkingRevenue = vehicles.Sum(v => (decimal)(DateTime.Now - v.ParkingTime).TotalHours) * ParkingHourlyPrice,
-                AccumulatedParkingRevenueView = AccumulatedParkingRevenue
+                UnrealizedParkingRevenue =
+                    vehicles.Sum(v => (decimal)(DateTime.Now - v.ParkingTime).TotalHours)
+                    * ParkingHourlyPrice,
+                AccumulatedParkingRevenueView = AccumulatedParkingRevenue,
             };
-
 
             return View(vehicleStats);
         }

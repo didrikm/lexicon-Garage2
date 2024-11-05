@@ -28,7 +28,7 @@ namespace lexicon_Garage2.Controllers
                 ? _context.Vehicle
                 : _context.Vehicle.Where(m => m.RegistrationNumber.Contains(registrationNumber));
 
-            return View(nameof(Garage), await model.ToListAsync());
+            return View(nameof(Admin), await model.ToListAsync());
         }
 
         public async Task<IActionResult> Garage()

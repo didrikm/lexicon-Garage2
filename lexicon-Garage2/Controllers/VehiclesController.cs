@@ -12,9 +12,10 @@ namespace lexicon_Garage2.Controllers
         private readonly lexicon_Garage2Context _context;
 
         public readonly decimal ParkingHourlyPrice = 100;
-        public static decimal AccumulatedParkingRevenue {  get; set; }
+        public static decimal AccumulatedParkingRevenue { get; set; }
 
         private const int MaxCapacity = 100;
+
         public VehiclesController(lexicon_Garage2Context context)
         {
             _context = context;
@@ -28,19 +29,21 @@ namespace lexicon_Garage2.Controllers
 
         public async Task<List<ParkingSpotViewModel>> GetParkingStatusAsync()
         {
-            var occupiedSpots = await _context.Vehicle
-                .Where(v => v.ParkingSpot.HasValue)
+            var occupiedSpots = await _context
+                .Vehicle.Where(v => v.ParkingSpot.HasValue)
                 .Select(v => v.ParkingSpot.Value)
                 .ToListAsync();
 
             var parkingStatus = new List<ParkingSpotViewModel>();
             for (int i = 1; i <= MaxCapacity; i++)
             {
-                parkingStatus.Add(new ParkingSpotViewModel
-                {
-                    SpotNumber = i,
-                    IsOccupied = occupiedSpots.Contains(i)
-                });
+                parkingStatus.Add(
+                    new ParkingSpotViewModel
+                    {
+                        SpotNumber = i,
+                        IsOccupied = occupiedSpots.Contains(i),
+                    }
+                );
             }
 
             return parkingStatus;
@@ -51,11 +54,12 @@ namespace lexicon_Garage2.Controllers
             int occupiedSpots = _context.Vehicle.Count();
             return MaxCapacity - occupiedSpots;
         }
+
         // Metod för att hitta nästa lediga platsnummer
         private int? GetNextAvailableSpot()
         {
-            var occupiedSpots = _context.Vehicle
-                .Where(v => v.ParkingSpot.HasValue)
+            var occupiedSpots = _context
+                .Vehicle.Where(v => v.ParkingSpot.HasValue)
                 .Select(v => v.ParkingSpot.Value)
                 .ToList();
 
@@ -76,9 +80,13 @@ namespace lexicon_Garage2.Controllers
             return View(await _context.Vehicle.ToListAsync());
         }
 
-
         // GET: Garage
-        public async Task<IActionResult> Garage(string? searchTerm = null, string sortColumn = "ArrivalTime", string sortOrder = "asc", string? timeFilter = null)
+        public async Task<IActionResult> Garage(
+            string? searchTerm = null,
+            string sortColumn = "ArrivalTime",
+            string sortOrder = "asc",
+            string? timeFilter = null
+        )
         {
             ViewBag.AvailableSpots = GetAvailableSpots();
             ViewBag.ParkingStatus = await GetParkingStatusAsync(); // Lägger till status för lediga/upptagna platser
@@ -105,23 +113,40 @@ namespace lexicon_Garage2.Controllers
                     "minute" => vehicles.Where(v => v.ParkingTime >= now.AddMinutes(-1)),
                     "hour" => vehicles.Where(v => v.ParkingTime >= now.AddHours(-1)),
                     "day" => vehicles.Where(v => v.ParkingTime >= now.AddDays(-1)),
-                    _ => vehicles
+                    _ => vehicles,
                 };
             }
 
             vehicles = sortColumn switch
             {
-                "RegistrationNumber" => sortOrder == "asc" ? vehicles.OrderBy(v => v.RegistrationNumber) : vehicles.OrderByDescending(v => v.RegistrationNumber),
-                "VehicleType" => sortOrder == "asc" ? vehicles.OrderBy(v => v.VehicleType) : vehicles.OrderByDescending(v => v.VehicleType),
-                "ArrivalTime" => sortOrder == "asc" ? vehicles.OrderBy(v => v.ParkingTime) : vehicles.OrderByDescending(v => v.ParkingTime),
-                _ => vehicles.OrderBy(v => v.ParkingTime)
+                "RegistrationNumber" => sortOrder == "asc"
+                    ? vehicles.OrderBy(v => v.RegistrationNumber)
+                    : vehicles.OrderByDescending(v => v.RegistrationNumber),
+                "VehicleType" => sortOrder == "asc"
+                    ? vehicles.OrderBy(v => v.VehicleType)
+                    : vehicles.OrderByDescending(v => v.VehicleType),
+                "ArrivalTime" => sortOrder == "asc"
+                    ? vehicles.OrderBy(v => v.ParkingTime)
+                    : vehicles.OrderByDescending(v => v.ParkingTime),
+                _ => vehicles.OrderBy(v => v.ParkingTime),
             };
 
-            var vehicleViewModels = await vehicles.Select(vehicle => new VehicleViewModel(vehicle)).ToListAsync();
+            var vehicleViewModels = await vehicles
+                .Select(vehicle => new VehicleViewModel(vehicle))
+                .ToListAsync();
 
             ViewData["CurrentSort"] = $"{sortColumn}_{sortOrder}";
 
             return View(vehicleViewModels);
+        }
+
+        public async Task<IActionResult> Filter(string registrationNumber)
+        {
+            var model = string.IsNullOrWhiteSpace(registrationNumber)
+                ? _context.Vehicle
+                : _context.Vehicle.Where(m => m.RegistrationNumber.Contains(registrationNumber));
+
+            return View(nameof(Garage), await model.ToListAsync());
         }
 
         // GET: Vehicles/Details/5
@@ -313,10 +338,11 @@ namespace lexicon_Garage2.Controllers
             {
                 NumberOfVehiclesParked = vehicles.Count,
                 NumberOfWheelsInGarage = vehicles.Sum(v => v.NumberOfWheels),
-                UnrealizedParkingRevenue = vehicles.Sum(v => (decimal)(DateTime.Now - v.ParkingTime).TotalHours) * ParkingHourlyPrice,
-                AccumulatedParkingRevenueView = AccumulatedParkingRevenue
+                UnrealizedParkingRevenue =
+                    vehicles.Sum(v => (decimal)(DateTime.Now - v.ParkingTime).TotalHours)
+                    * ParkingHourlyPrice,
+                AccumulatedParkingRevenueView = AccumulatedParkingRevenue,
             };
-
 
             return View(vehicleStats);
         }

@@ -125,7 +125,7 @@ namespace lexicon_Garage2.Controllers
                 {
                     _context.Add(vehicle);
                     await _context.SaveChangesAsync();
-                    TempData["SuccessMessage"] = "Parking has started.";
+                    TempData["SuccessMessage"] = $"Parking has started for vehicle {vehicle.RegistrationNumber}";
                     return RedirectToAction(nameof(Garage));
                 }
                 catch (DbUpdateException ex)
@@ -240,7 +240,7 @@ namespace lexicon_Garage2.Controllers
             {
                 _context.Vehicle.Remove(vehicle);
                 await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = "Parking has ended.";
+                TempData["SuccessMessage"] = $"Parking has ended for vehicle {vehicle.RegistrationNumber}";
                 var receiptViewModel = new ReceiptViewModel(vehicle, ParkingHourlyPrice);
                 AccumulatedParkingRevenue += receiptViewModel.Total;
                 return View("Receipt", receiptViewModel);

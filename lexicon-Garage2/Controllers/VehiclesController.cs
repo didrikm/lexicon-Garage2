@@ -1,6 +1,7 @@
 ﻿using lexicon_Garage2.Data;
 using lexicon_Garage2.Migrations;
 using lexicon_Garage2.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -8,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace lexicon_Garage2.Controllers
 {
+    [Authorize]
     public class VehiclesController : Controller
     {
         private readonly lexicon_Garage2Context _context;

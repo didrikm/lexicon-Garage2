@@ -1,4 +1,5 @@
 using lexicon_Garage2.Data;
+using lexicon_Garage2.Extensions;
 using lexicon_Garage2.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -35,6 +36,8 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
+
+await app.SeedDataAsync();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

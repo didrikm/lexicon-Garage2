@@ -21,6 +21,7 @@ namespace lexicon_Garage2.Data
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Vehicle>().HasIndex(v => v.RegistrationNumber).IsUnique();
+            //modelBuilder.Entity<Vehicle>().HasIndex(v => v.RegistrationNumber).IsUnique();
         }
     }
 }

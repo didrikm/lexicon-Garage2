@@ -2,10 +2,10 @@ using lexicon_Garage2.Data;
 using lexicon_Garage2.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configure DbContext
 builder.Services.AddDbContext<lexicon_Garage2Context>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("lexicon_Garage2Context")
@@ -15,23 +15,24 @@ builder.Services.AddDbContext<lexicon_Garage2Context>(options =>
     )
 );
 
+// Configure Identity
 builder
     .Services.AddDefaultIdentity<ApplicationUser>(options =>
-        options.SignIn.RequireConfirmedAccount = true
-    )
+    {
+        options.SignIn.RequireConfirmedAccount = true;
+    })
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<lexicon_Garage2Context>();
 
-// Add services to the container.
+// Add services to the container
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure middleware
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -40,6 +41,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication(); // Ensure this is included for Identity
 app.UseAuthorization();
 
 app.MapControllerRoute(name: "default", pattern: "{controller=Vehicles}/{action=Garage}/{id?}");

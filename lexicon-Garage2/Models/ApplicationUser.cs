@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
 
 namespace lexicon_Garage2.Models
 {
     public class ApplicationUser : IdentityUser
     {
-        //public int SSNId { get; set; [Required]
         [RegularExpression(
             @"^\d{6}-\d{4}$",
             ErrorMessage = "The SSN must be in the format YYYYMMDD-XXXX."
@@ -17,10 +17,5 @@ namespace lexicon_Garage2.Models
 
         [Required]
         public string LastName { get; set; }
-
-        //  public string UserName {  get; set; }
-
-        //  public string FirstName { get; set; }
-        //  public string LastName { get; set; }
     }
 }

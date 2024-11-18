@@ -1,8 +1,11 @@
-﻿using lexicon_Garage2.Data;
+using lexicon_Garage2.Data;
+using lexicon_Garage2.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
+
 builder.Services.AddDbContext<lexicon_Garage2Context>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("lexicon_Garage2Context")
@@ -11,6 +14,13 @@ builder.Services.AddDbContext<lexicon_Garage2Context>(options =>
             )
     )
 );
+
+builder
+    .Services.AddDefaultIdentity<ApplicationUser>(options =>
+        options.SignIn.RequireConfirmedAccount = true
+    )
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<lexicon_Garage2Context>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -33,5 +43,6 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllerRoute(name: "default", pattern: "{controller=Vehicles}/{action=Garage}/{id?}");
+app.MapRazorPages();
 
 app.Run();

@@ -1,6 +1,7 @@
 ﻿using lexicon_Garage2.Data;
 using lexicon_Garage2.Migrations;
 using lexicon_Garage2.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -10,15 +11,20 @@ namespace lexicon_Garage2.Controllers
     public class VehiclesController : Controller
     {
         private readonly lexicon_Garage2Context _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public readonly decimal ParkingHourlyPrice = 100;
         public static decimal AccumulatedParkingRevenue { get; set; }
 
         private const int MaxCapacity = 10;
 
-        public VehiclesController(lexicon_Garage2Context context)
+        public VehiclesController(
+            UserManager<ApplicationUser> userManager,
+            lexicon_Garage2Context context
+        )
         {
             _context = context;
+            _userManager = userManager;
         }
 
         public async Task<List<ParkingSpotViewModel>> GetParkingStatusAsync()

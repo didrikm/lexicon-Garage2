@@ -8,7 +8,7 @@ namespace lexicon_Garage2.Models
     {
         [RegularExpression(
             @"^\d{6}-\d{4}$",
-            ErrorMessage = "The SSN must be in the format YYYYMMDD-XXXX."
+            ErrorMessage = "The SSN must be in the format YYMMDD-XXXX."
         )]
         public string Id { get; set; }
 

@@ -10,7 +10,7 @@ namespace lexicon_Garage2.Models
             @"^\d{6}-\d{4}$",
             ErrorMessage = "The SSN must be in the format YYMMDD-XXXX."
         )]
-        public string Id { get; set; }
+        public string SSN { get; set; }
 
         [Required]
         public string FirstName { get; set; }

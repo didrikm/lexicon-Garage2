@@ -97,7 +97,7 @@ namespace lexicon_Garage2.Areas.Identity.Pages.Account
             [Required]
             [RegularExpression(
                 @"^\d{6}-\d{4}$",
-                ErrorMessage = "The SSN must be in the format YYYYMMDD-XXXX."
+                ErrorMessage = "The SSN must be in the format YYMMDD-XXXX."
             )]
             [Display(Name = "SSN")]
             public string SSN { get; set; }
@@ -143,7 +143,7 @@ namespace lexicon_Garage2.Areas.Identity.Pages.Account
             {
                 var user = CreateUser();
 
-                user.Id = Input.SSN;
+                user.SSN = Input.SSN;
                 user.FirstName = Input.FirstName;
                 user.LastName = Input.LastName;
 

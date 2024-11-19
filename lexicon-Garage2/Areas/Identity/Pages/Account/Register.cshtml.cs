@@ -92,7 +92,10 @@ namespace lexicon_Garage2.Areas.Identity.Pages.Account
 
             [Required]
             [Display(Name = "Last Name")]
-            [DifferentFrom(nameof(FirstName), ErrorMessage = "First Name cannot be the same as Last Name.")]
+            [DifferentFrom(
+                nameof(FirstName),
+                ErrorMessage = "First Name cannot be the same as Last Name."
+            )]
             public string LastName { get; set; }
 
             [Required]
@@ -150,6 +153,7 @@ namespace lexicon_Garage2.Areas.Identity.Pages.Account
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)
@@ -228,6 +232,7 @@ namespace lexicon_Garage2.Areas.Identity.Pages.Account
             return (IUserEmailStore<ApplicationUser>)_userStore;
         }
     }
+
     public class DifferentFromAttribute : ValidationAttribute
     {
         private readonly string _comparisonProperty;
@@ -237,13 +242,16 @@ namespace lexicon_Garage2.Areas.Identity.Pages.Account
             _comparisonProperty = comparisonProperty;
         }
 
-        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        protected override ValidationResult IsValid(
+            object value,
+            ValidationContext validationContext
+        )
         {
             var currentValue = value?.ToString();
-            var comparisonValue = validationContext.ObjectType
-                .GetProperty(_comparisonProperty)?
-                .GetValue(validationContext.ObjectInstance)?
-                .ToString();
+            var comparisonValue = validationContext
+                .ObjectType.GetProperty(_comparisonProperty)
+                ?.GetValue(validationContext.ObjectInstance)
+                ?.ToString();
 
             if (currentValue == comparisonValue)
             {

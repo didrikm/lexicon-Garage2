@@ -95,7 +95,7 @@ namespace lexicon_Garage2.Data
                 Email = accountEmail,
                 FirstName = fName,
                 LastName = lName,
-                Id = ssn, // Use SSN as a unique identifier (assuming this is desired)
+                SSN = ssn, // Use SSN as a unique identifier (assuming this is desired)
                 EmailConfirmed = true,
             };
 

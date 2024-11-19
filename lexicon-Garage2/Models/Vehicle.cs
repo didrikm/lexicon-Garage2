@@ -30,14 +30,16 @@ namespace lexicon_Garage2.Models
         public int NumberOfWheels { get; set; }
 
         public DateTime ParkingTime { get; set; }
-        public int? ParkingSpot { get; set; }
+        public ICollection<ParkingSpot> ParkingSpots { get; set; }
+
+        public int Size => VehicleType.Size;
 
         public Vehicle()
         {
             ParkingTime = DateTime.Now;
         }
     }
-
+    /*
     public enum VehicleType
     {
         Car,
@@ -46,4 +48,5 @@ namespace lexicon_Garage2.Models
         Boat,
         Motorcycle,
     }
+    */
 }

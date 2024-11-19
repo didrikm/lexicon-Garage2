@@ -23,56 +23,61 @@ namespace lexicon_Garage2.Controllers
 
         public async Task<List<ParkingSpotViewModel>> GetParkingStatusAsync()
         {
-            var vehicles = await _context.Vehicle.Where(v => v.ParkingSpot.HasValue).ToListAsync();
+            List<Vehicle> vehicles = await _context.Vehicle.Where(v => v.ParkingSpots.Any()).ToListAsync();
 
-            var parkingStatus = new List<ParkingSpotViewModel>();
-            for (int i = 1; i <= MaxCapacity; i++)
+            List<ParkingSpotViewModel> parkingStatus = new();
+
+            List<ParkingSpot> parkingSpots = await _context.ParkingSpots.ToListAsync();
+
+            foreach (var parkingSpot in parkingSpots)
             {
-                var vehicleInSpot = vehicles.FirstOrDefault(v => v.ParkingSpot == i);
-
-                parkingStatus.Add(
+                var vehicleInSpot = vehicles.FirstOrDefault(v => v.ParkingSpots.Contains(parkingSpot));
+                if (vehicleInSpot != null)
+                {
+                    parkingStatus.Add(
                     new ParkingSpotViewModel
                     {
-                        SpotNumber = i,
+                        SpotNumber = (parkingSpots.IndexOf(parkingSpot) + 1),
                         IsOccupied = vehicleInSpot != null,
                         RegistrationNumber =
                             vehicleInSpot?.RegistrationNumber // Assign registration number if occupied
-                        ,
                     }
                 );
+                }
             }
 
             return parkingStatus;
         }
 
-        public int GetAvailableSpots()
+        public async Task<int> GetAvailableSpotsAsync()
         {
-            int occupiedSpots = _context.Vehicle.Count();
-            return MaxCapacity - occupiedSpots;
+            int occipiedSpots = 0;
+
+            foreach (var vehicle in await _context.Vehicle.ToListAsync())
+            {
+                occipiedSpots += vehicle.Size;
+            }
+
+            var totalSpots = await _context.ParkingSpots.ToListAsync();
+
+            return totalSpots.Count() - occipiedSpots;
         }
 
         // Metod för att hitta nästa lediga platsnummer
-        private int? GetNextAvailableSpot()
+        private async Task<ParkingSpot?> GetNextAvailableSpotAsync()
         {
-            var occupiedSpots = _context
-                .Vehicle.Where(v => v.ParkingSpot.HasValue)
-                .Select(v => v.ParkingSpot.Value)
-                .ToList();
+            var firstAvailableSpot = await _context.ParkingSpots.FirstOrDefaultAsync(ps => ps.ParkedVehicle == null);
 
-            for (int i = 1; i <= MaxCapacity; i++)
+            if (firstAvailableSpot == null)
             {
-                if (!occupiedSpots.Contains(i))
-                {
-                    return i; // Returnera första lediga plats
-                }
+                return null; // Om alla platser är upptagna
             }
-
-            return null; // Om alla platser är upptagna
+            return firstAvailableSpot; // Returnera första lediga plats(om det finns någon)
         }
 
         public async Task<IActionResult> ParkingSpot()
         {
-            ViewBag.AvailableSpots = GetAvailableSpots();
+            ViewBag.AvailableSpots = await GetAvailableSpotsAsync();
             ViewBag.ParkingStatus = await GetParkingStatusAsync();
             var parkingStatus = await GetParkingStatusAsync();
             return View(parkingStatus); // Pass the list of ParkingSpotViewModel
@@ -92,16 +97,16 @@ namespace lexicon_Garage2.Controllers
             string? timeFilter = null
         )
         {
-            ViewBag.AvailableSpots = GetAvailableSpots();
+            ViewBag.AvailableSpots = await GetAvailableSpotsAsync();
             ViewBag.ParkingStatus = await GetParkingStatusAsync(); // Lägger till status för lediga/upptagna platser
 
             IQueryable<Vehicle> vehicles = _context.Vehicle;
 
             if (!string.IsNullOrEmpty(searchTerm))
             {
-                if (Enum.TryParse<VehicleType>(searchTerm, out var vehicleTypeEnum))
+                if (await _context.Vehicle.AnyAsync(v => v.VehicleType.TypeName == searchTerm))
                 {
-                    vehicles = vehicles.Where(v => v.VehicleType == vehicleTypeEnum);
+                    vehicles = vehicles.Where(v => v.VehicleType.TypeName == searchTerm);
                 }
                 else
                 {
@@ -133,8 +138,8 @@ namespace lexicon_Garage2.Controllers
                     ? vehicles.OrderBy(v => v.ParkingTime)
                     : vehicles.OrderByDescending(v => v.ParkingTime),
                 "ParkingSpot" => sortOrder == "asc"
-                    ? vehicles.OrderBy(v => v.ParkingSpot)
-                    : vehicles.OrderByDescending(v => v.ParkingSpot),
+                    ? vehicles.OrderBy(v => v.ParkingSpots)
+                    : vehicles.OrderByDescending(v => v.ParkingSpots),
                 _ => vehicles.OrderBy(v => v.ParkingTime),
             };
 
@@ -190,13 +195,13 @@ namespace lexicon_Garage2.Controllers
         )
         {
             // Check if there are available spots
-            if (GetAvailableSpots() <= 0)
+            if (await GetAvailableSpotsAsync() <= 0)
             {
                 TempData["ErrorMessage"] = "The garage is full. No more spots are available!";
                 return RedirectToAction(nameof(Garage));
             }
             // Hämta nästa tillgängliga parkeringsplats
-            var nextAvailableSpot = GetNextAvailableSpot();
+            var nextAvailableSpot = await GetNextAvailableSpotAsync();
             if (nextAvailableSpot == null)
             {
                 TempData["ErrorMessage"] = "The garage is full - no available spots.";
@@ -206,7 +211,7 @@ namespace lexicon_Garage2.Controllers
             {
                 try
                 {
-                    vehicle.ParkingSpot = nextAvailableSpot; // Tilldela den lediga platsen till fordonet
+                    vehicle.ParkingSpots.Add(nextAvailableSpot); // Tilldela den lediga platsen till fordonet
                     _context.Add(vehicle);
                     await _context.SaveChangesAsync();
                     TempData["SuccessMessage"] = "Parking has started.";
@@ -278,7 +283,7 @@ namespace lexicon_Garage2.Controllers
 
                     // Preserve original ParkingTime and ParkingSpot
                     vehicle.ParkingTime = existingVehicle.ParkingTime;
-                    vehicle.ParkingSpot = existingVehicle.ParkingSpot;
+                    vehicle.ParkingSpots = existingVehicle.ParkingSpots;
 
                     _context.Update(vehicle);
                     await _context.SaveChangesAsync();
@@ -329,7 +334,6 @@ namespace lexicon_Garage2.Controllers
             if (vehicle != null)
             {
                 // Store the parking spot number before removing the vehicle
-                int? parkingSpotNumber = vehicle.ParkingSpot;
 
                 _context.Vehicle.Remove(vehicle);
                 await _context.SaveChangesAsync();
@@ -338,7 +342,7 @@ namespace lexicon_Garage2.Controllers
 
                 // Create the receipt view model with the parking spot number
                 var receiptViewModel = new ReceiptViewModel(vehicle, ParkingHourlyPrice);
-                receiptViewModel.ParkingSpotNumber = parkingSpotNumber ?? 0;
+                
 
                 AccumulatedParkingRevenue += receiptViewModel.Total;
                 return View("Receipt", receiptViewModel);

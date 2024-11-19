@@ -7,7 +7,6 @@
         public DateTime CheckOutTime { get; set; }
         public TimeSpan DurationOfParking { get; set; }
         public decimal Total { get; set; }
-        public int ParkingSpotNumber { get; set; }
 
         public ReceiptViewModel(Vehicle vehicle, decimal parkingHourlyPrice)
         {
@@ -16,7 +15,6 @@
             CheckOutTime = DateTime.Now;
             DurationOfParking = CheckOutTime - CheckInTime;
             Total = parkingHourlyPrice * (decimal)DurationOfParking.TotalHours;
-            ParkingSpotNumber = vehicle.ParkingSpot ?? 0; // Set the parking spot number
         }
 
         public string GetFormattedDuration()

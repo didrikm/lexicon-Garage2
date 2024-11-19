@@ -5,18 +5,25 @@
 namespace lexicon_Garage2.Migrations
 {
     /// <inheritdoc />
-    public partial class MovedEnumToVehicle : Migration
+    public partial class ChangedIdToSSN : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-
+            migrationBuilder.AddColumn<string>(
+                name: "SSN",
+                table: "AspNetUsers",
+                type: "nvarchar(max)",
+                nullable: false,
+                defaultValue: "");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-
+            migrationBuilder.DropColumn(
+                name: "SSN",
+                table: "AspNetUsers");
         }
     }
 }

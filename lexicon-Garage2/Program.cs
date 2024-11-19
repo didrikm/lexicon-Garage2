@@ -45,6 +45,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthentication(); // Ensure this is included for Identity
+
 app.UseAuthorization();
 
 app.MapControllerRoute(name: "default", pattern: "{controller=Vehicles}/{action=Garage}/{id?}");

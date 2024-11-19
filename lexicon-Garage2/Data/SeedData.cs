@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using lexicon_Garage2.Models;
+﻿using lexicon_Garage2.Models;
 using Microsoft.AspNetCore.Identity;
 
 namespace lexicon_Garage2.Data
@@ -22,7 +21,7 @@ namespace lexicon_Garage2.Data
             userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
 
             // Define roles and account details
-            var roleNames = new[] { "User", "Admin" };
+            var roleNames = new[] { "Admin", "User" };
             var adminEmail = "admin@admin.com";
             var userEmail = "user@user.com";
 
@@ -35,14 +34,14 @@ namespace lexicon_Garage2.Data
                 "Admin",
                 "Adminsson",
                 "800101-1234",
-                "P@55w.rd"
+                "Abcd_1234"
             );
             var user = await AddAccountAsync(
                 userEmail,
                 "User",
                 "Usersson",
                 "990202-5678",
-                "Pa55w.rd"
+                "Abcd_1234"
             );
 
             // Assign roles

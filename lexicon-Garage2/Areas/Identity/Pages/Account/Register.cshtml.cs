@@ -92,6 +92,7 @@ namespace lexicon_Garage2.Areas.Identity.Pages.Account
 
             [Required]
             [Display(Name = "Last Name")]
+            [DifferentFrom(nameof(FirstName), ErrorMessage = "First Name cannot be the same as Last Name.")]
             public string LastName { get; set; }
 
             [Required]
@@ -225,6 +226,31 @@ namespace lexicon_Garage2.Areas.Identity.Pages.Account
                 );
             }
             return (IUserEmailStore<ApplicationUser>)_userStore;
+        }
+    }
+    public class DifferentFromAttribute : ValidationAttribute
+    {
+        private readonly string _comparisonProperty;
+
+        public DifferentFromAttribute(string comparisonProperty)
+        {
+            _comparisonProperty = comparisonProperty;
+        }
+
+        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        {
+            var currentValue = value?.ToString();
+            var comparisonValue = validationContext.ObjectType
+                .GetProperty(_comparisonProperty)?
+                .GetValue(validationContext.ObjectInstance)?
+                .ToString();
+
+            if (currentValue == comparisonValue)
+            {
+                return new ValidationResult(ErrorMessage ?? "The fields must be different.");
+            }
+
+            return ValidationResult.Success;
         }
     }
 }

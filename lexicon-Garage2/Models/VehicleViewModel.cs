@@ -8,7 +8,7 @@
             VehicleType = vehicle.VehicleType;
             RegistrationNumber = vehicle.RegistrationNumber;
             ArrivalTime = vehicle.ParkingTime;
-            ParkingSpotNumber = vehicle.ParkingSpot;
+            ParkingSpotNumber = vehicle.ParkingSpot?.SpotNumber;
         }
 
         public int Id { get; set; }

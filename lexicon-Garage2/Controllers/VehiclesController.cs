@@ -1,5 +1,5 @@
 ﻿using lexicon_Garage2.Data;
-using lexicon_Garage2.Migrations;
+
 using lexicon_Garage2.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -31,27 +31,30 @@ namespace lexicon_Garage2.Controllers
 
         public async Task<List<ParkingSpotViewModel>> GetParkingStatusAsync()
         {
-            var vehicles = await _context.Vehicle.Where(v => v.ParkingSpot.HasValue).ToListAsync();
+            // Hämta alla parkeringsplatser och inkludera fordon
+            var parkingSpots = await _context.ParkingSpots
+                .Include(p => p.Vehicle) // Inkludera relaterade fordon
+                .ToListAsync();
 
             var parkingStatus = new List<ParkingSpotViewModel>();
             for (int i = 1; i <= MaxCapacity; i++)
             {
-                var vehicleInSpot = vehicles.FirstOrDefault(v => v.ParkingSpot == i);
+                // Hitta parkeringsplats baserat på SpotNumber
+                var spot = parkingSpots.FirstOrDefault(p => p.SpotNumber == i);
 
                 parkingStatus.Add(
                     new ParkingSpotViewModel
                     {
                         SpotNumber = i,
-                        IsOccupied = vehicleInSpot != null,
-                        RegistrationNumber =
-                            vehicleInSpot?.RegistrationNumber // Assign registration number if occupied
-                        ,
+                        IsOccupied = spot?.Vehicle != null, // Kontrollera om fordon finns
+                        RegistrationNumber = spot?.Vehicle?.RegistrationNumber // Hämta registreringsnummer om platsen är upptagen
                     }
                 );
             }
 
             return parkingStatus;
         }
+
 
         public int GetAvailableSpots()
         {
@@ -62,9 +65,9 @@ namespace lexicon_Garage2.Controllers
         // Metod för att hitta nästa lediga platsnummer
         private int? GetNextAvailableSpot()
         {
-            var occupiedSpots = _context
-                .Vehicle.Where(v => v.ParkingSpot.HasValue)
-                .Select(v => v.ParkingSpot.Value)
+            var occupiedSpots = _context.Vehicle
+                .Where(v => v.ParkingSpot != null) // Kontrollera om ParkingSpot inte är null
+                .Select(v => v.ParkingSpot.SpotNumber) // Få tillgång till SpotNumber
                 .ToList();
 
             for (int i = 1; i <= MaxCapacity; i++)
@@ -187,14 +190,11 @@ namespace lexicon_Garage2.Controllers
             return View();
         }
 
-        // POST: Vehicles/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
             [Bind("Id,VehicleType,RegistrationNumber,Color,Brand,Model,NumberOfWheels")]
-                Vehicle vehicle
+        Vehicle vehicle
         )
         {
             // Check if there are available spots
@@ -203,18 +203,26 @@ namespace lexicon_Garage2.Controllers
                 TempData["ErrorMessage"] = "The garage is full. No more spots are available!";
                 return RedirectToAction(nameof(Garage));
             }
+
             // Hämta nästa tillgängliga parkeringsplats
-            var nextAvailableSpot = GetNextAvailableSpot();
-            if (nextAvailableSpot == null)
+            var nextAvailableSpotNumber = GetNextAvailableSpot();
+            if (nextAvailableSpotNumber == null)
             {
                 TempData["ErrorMessage"] = "The garage is full - no available spots.";
                 return RedirectToAction(nameof(Garage));
             }
+
             if (ModelState.IsValid)
             {
                 try
                 {
-                    vehicle.ParkingSpot = nextAvailableSpot; // Tilldela den lediga platsen till fordonet
+                    // Skapa en ny ParkingSpot-instans och tilldela platsnumret
+                    var parkingSpot = new ParkingSpot
+                    {
+                        SpotNumber = nextAvailableSpotNumber.Value // Eftersom GetNextAvailableSpot returnerar en int?
+                    };
+
+                    vehicle.ParkingSpot = parkingSpot; // Tilldela den lediga platsen till fordonet
                     _context.Add(vehicle);
                     await _context.SaveChangesAsync();
                     TempData["SuccessMessage"] = "Parking has started.";
@@ -230,12 +238,14 @@ namespace lexicon_Garage2.Controllers
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Bigly error: ", ex);
+                    Console.WriteLine("Error: ", ex);
                 }
             }
+
             TempData["ErrorMessage"] = "Could not park the vehicle. Please check your inputs.";
             return View(vehicle);
         }
+
 
         // GET: Vehicles/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -337,7 +347,8 @@ namespace lexicon_Garage2.Controllers
             if (vehicle != null)
             {
                 // Store the parking spot number before removing the vehicle
-                int? parkingSpotNumber = vehicle.ParkingSpot;
+                int? parkingSpotNumber = vehicle.ParkingSpot?.SpotNumber;
+
 
                 _context.Vehicle.Remove(vehicle);
                 await _context.SaveChangesAsync();

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using lexicon_Garage2.Data;
 
@@ -11,9 +12,11 @@ using lexicon_Garage2.Data;
 namespace lexicon_Garage2.Migrations
 {
     [DbContext(typeof(lexicon_Garage2Context))]
-    partial class lexicon_Garage2ContextModelSnapshot : ModelSnapshot
+    [Migration("20241119112453_AddParkingSpot")]
+    partial class AddParkingSpot
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -250,9 +253,6 @@ namespace lexicon_Garage2.Migrations
                     b.Property<bool>("IsOccupied")
                         .HasColumnType("bit");
 
-                    b.Property<int>("MaxCapacity")
-                        .HasColumnType("int");
-
                     b.Property<string>("RegistrationNumber")
                         .HasColumnType("nvarchar(max)");
 
@@ -264,9 +264,7 @@ namespace lexicon_Garage2.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("VehicleId")
-                        .IsUnique()
-                        .HasFilter("[VehicleId] IS NOT NULL");
+                    b.HasIndex("VehicleId");
 
                     b.ToTable("ParkingSpots");
                 });
@@ -295,6 +293,9 @@ namespace lexicon_Garage2.Migrations
                         .HasColumnType("nvarchar(20)");
 
                     b.Property<int>("NumberOfWheels")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ParkingSpot")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("ParkingTime")
@@ -370,15 +371,10 @@ namespace lexicon_Garage2.Migrations
             modelBuilder.Entity("lexicon_Garage2.Models.ParkingSpot", b =>
                 {
                     b.HasOne("lexicon_Garage2.Models.Vehicle", "Vehicle")
-                        .WithOne("ParkingSpot")
-                        .HasForeignKey("lexicon_Garage2.Models.ParkingSpot", "VehicleId");
+                        .WithMany()
+                        .HasForeignKey("VehicleId");
 
                     b.Navigation("Vehicle");
-                });
-
-            modelBuilder.Entity("lexicon_Garage2.Models.Vehicle", b =>
-                {
-                    b.Navigation("ParkingSpot");
                 });
 #pragma warning restore 612, 618
         }

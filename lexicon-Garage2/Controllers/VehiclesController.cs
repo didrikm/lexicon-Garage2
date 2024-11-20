@@ -18,7 +18,7 @@ namespace lexicon_Garage2.Controllers
         public readonly decimal ParkingHourlyPrice = 100;
         public static decimal AccumulatedParkingRevenue { get; set; }
 
-        private const int MaxCapacity = 10;
+
 
         public VehiclesController(
             UserManager<ApplicationUser> userManager,
@@ -28,16 +28,23 @@ namespace lexicon_Garage2.Controllers
             _context = context;
             _userManager = userManager;
         }
+        // Hämtar MaxCapacity från första ParkingSpot i databasen
+        private int GetMaxCapacity()
+        {
+            return _context.ParkingSpots.Select(p => p.MaxCapacity).FirstOrDefault();
+        }
 
         public async Task<List<ParkingSpotViewModel>> GetParkingStatusAsync()
         {
+            var maxCapacity = GetMaxCapacity(); // Använd GetMaxCapacity för att hämta värdet från databasen
+
             // Hämta alla parkeringsplatser och inkludera fordon
             var parkingSpots = await _context.ParkingSpots
                 .Include(p => p.Vehicle) // Inkludera relaterade fordon
                 .ToListAsync();
 
             var parkingStatus = new List<ParkingSpotViewModel>();
-            for (int i = 1; i <= MaxCapacity; i++)
+            for (int i = 1; i <= maxCapacity; i++)
             {
                 // Hitta parkeringsplats baserat på SpotNumber
                 var spot = parkingSpots.FirstOrDefault(p => p.SpotNumber == i);
@@ -56,10 +63,13 @@ namespace lexicon_Garage2.Controllers
         }
 
 
+
         public int GetAvailableSpots()
         {
+            var maxCapacity = GetMaxCapacity(); // Använd GetMaxCapacity för att hämta värdet från databasen
+
             int occupiedSpots = _context.Vehicle.Count();
-            return MaxCapacity - occupiedSpots;
+            return maxCapacity - occupiedSpots;
         }
 
         // Metod för att hitta nästa lediga platsnummer
@@ -70,7 +80,9 @@ namespace lexicon_Garage2.Controllers
                 .Select(v => v.ParkingSpot.SpotNumber) // Få tillgång till SpotNumber
                 .ToList();
 
-            for (int i = 1; i <= MaxCapacity; i++)
+            var maxCapacity = GetMaxCapacity(); // Använd GetMaxCapacity för att hämta värdet från databasen
+
+            for (int i = 1; i <= maxCapacity; i++)
             {
                 if (!occupiedSpots.Contains(i))
                 {
@@ -88,6 +100,7 @@ namespace lexicon_Garage2.Controllers
             var parkingStatus = await GetParkingStatusAsync();
             return View(parkingStatus); // Pass the list of ParkingSpotViewModel
         }
+
 
         // GET: Vehicles
         public async Task<IActionResult> Admin()
@@ -303,6 +316,12 @@ namespace lexicon_Garage2.Controllers
 
                     TempData["SuccessMessage"] = "The vehicle has been updated.";
                 }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!VehicleExists(vehicle.Id))
+                    {
+                        return NotFound();
+                    }
                     else
                     {
                         throw;
@@ -389,6 +408,37 @@ namespace lexicon_Garage2.Controllers
         private bool VehicleExists(int id)
         {
             return _context.Vehicle.Any(e => e.Id == id);
+        }
+        // POST: Update Max Capacity
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateMaxCapacity(int newCapacity)
+        {
+            if (newCapacity <= 0)
+            {
+                TempData["ErrorMessage"] = "Capacity must be a positive number.";
+                return RedirectToAction(nameof(ParkingSpot));
+            }
+
+            var parkingSpot = await _context.ParkingSpots.FirstOrDefaultAsync();
+            if (parkingSpot == null)
+            {
+                // Om ingen ParkingSpot finns, skapa en ny
+                parkingSpot = new ParkingSpot { MaxCapacity = newCapacity };
+                _context.ParkingSpots.Add(parkingSpot);
+            }
+            else
+            {
+                // Uppdatera existerande ParkingSpot
+                parkingSpot.MaxCapacity = newCapacity;
+                _context.ParkingSpots.Update(parkingSpot);
+            }
+
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = $"Max capacity updated to {newCapacity}.";
+            return RedirectToAction(nameof(ParkingSpot));
         }
     }
 }

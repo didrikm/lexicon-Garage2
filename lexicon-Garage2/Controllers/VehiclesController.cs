@@ -343,13 +343,17 @@ namespace lexicon_Garage2.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var vehicle = await _context.Vehicle.FindAsync(id);
+            var vehicle = await _context.Vehicle.Include(v => v.ParkingSpot).FirstOrDefaultAsync(v => v.Id == id);
             if (vehicle != null)
             {
-                // Store the parking spot number before removing the vehicle
                 int? parkingSpotNumber = vehicle.ParkingSpot?.SpotNumber;
 
+                if (vehicle.ParkingSpot != null)
+                {
+                    _context.ParkingSpots.Remove(vehicle.ParkingSpot); // Remove the parking spot
+                }
 
+                // Remove the vehicle
                 _context.Vehicle.Remove(vehicle);
                 await _context.SaveChangesAsync();
 
@@ -369,6 +373,7 @@ namespace lexicon_Garage2.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Garage));
         }
+
 
         // GET: Statistics
         public async Task<IActionResult> Statistics()

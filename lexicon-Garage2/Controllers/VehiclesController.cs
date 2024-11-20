@@ -303,12 +303,6 @@ namespace lexicon_Garage2.Controllers
 
                     TempData["SuccessMessage"] = "The vehicle has been updated.";
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!VehicleExists(vehicle.Id))
-                    {
-                        return NotFound();
-                    }
                     else
                     {
                         throw;

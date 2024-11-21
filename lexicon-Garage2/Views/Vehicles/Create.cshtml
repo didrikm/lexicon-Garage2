@@ -1,4 +1,5 @@
-﻿@model Vehicle
+﻿@using lexicon_Garage2.Models.ViewModels
+@model VehicleViewModel 
 
 @{
     ViewData["Title"] = "Park";
@@ -18,8 +19,8 @@
                         <label asp-for="VehicleType" class="form-label text-dark fw-bold"></label>
                         <select asp-for="VehicleType" class="form-control border-dark text-dark">
                             <option value="" disabled selected>Select Type</option>
-                            <option value="Car" disabled selected>Car</option>
-                            <option value="Bus" disabled selected>Bus</option>
+                            <option value="Car" enable selected>Car</option>
+                            <option value="Bus" enable selected>Bus</option>
 
                         </select>
                         <span asp-validation-for="VehicleType" class="text-danger"></span>

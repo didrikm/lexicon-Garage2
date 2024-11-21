@@ -10,7 +10,7 @@
             VehicleType = vehicle.VehicleType;
             RegistrationNumber = vehicle.RegistrationNumber;
             ArrivalTime = vehicle.ParkingTime;
-            ParkingSpotNumber = vehicle.ParkingSpot;
+            //ParkingSpotNumber = vehicle.ParkingSpots;
             Color = vehicle.Color;
             Brand = vehicle.Brand;
             Model = vehicle.Model;

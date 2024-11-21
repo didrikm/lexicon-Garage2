@@ -12,8 +12,8 @@ using lexicon_Garage2.Data;
 namespace lexicon_Garage2.Migrations
 {
     [DbContext(typeof(lexicon_Garage2Context))]
-    [Migration("20241121095247_RelationFix")]
-    partial class RelationFix
+    [Migration("20241121222828_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -242,6 +242,27 @@ namespace lexicon_Garage2.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("lexicon_Garage2.Models.ParkingSpot", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsOccupied")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("VehicleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VehicleId");
+
+                    b.ToTable("ParkingSpots");
+                });
+
             modelBuilder.Entity("lexicon_Garage2.Models.Vehicle", b =>
                 {
                     b.Property<int>("Id")
@@ -271,9 +292,6 @@ namespace lexicon_Garage2.Migrations
                     b.Property<int>("NumberOfWheels")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ParkingSpot")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("ParkingTime")
                         .HasColumnType("datetime2");
 
@@ -282,7 +300,7 @@ namespace lexicon_Garage2.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<int>("VehicleType")
+                    b.Property<int>("VehicleTypeId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -292,7 +310,29 @@ namespace lexicon_Garage2.Migrations
                     b.HasIndex("RegistrationNumber")
                         .IsUnique();
 
-                    b.ToTable("Vehicle");
+                    b.HasIndex("VehicleTypeId");
+
+                    b.ToTable("Vehicles");
+                });
+
+            modelBuilder.Entity("lexicon_Garage2.Models.VehicleType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Size")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TypeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("VehicleTypes");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -346,18 +386,40 @@ namespace lexicon_Garage2.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("lexicon_Garage2.Models.ParkingSpot", b =>
+                {
+                    b.HasOne("lexicon_Garage2.Models.Vehicle", "Vehicle")
+                        .WithMany("ParkingSpots")
+                        .HasForeignKey("VehicleId");
+
+                    b.Navigation("Vehicle");
+                });
+
             modelBuilder.Entity("lexicon_Garage2.Models.Vehicle", b =>
                 {
                     b.HasOne("lexicon_Garage2.Models.ApplicationUser", "ApplicationUser")
                         .WithMany("Vehicles")
                         .HasForeignKey("ApplicationUserId");
 
+                    b.HasOne("lexicon_Garage2.Models.VehicleType", "VehicleType")
+                        .WithMany()
+                        .HasForeignKey("VehicleTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("ApplicationUser");
+
+                    b.Navigation("VehicleType");
                 });
 
             modelBuilder.Entity("lexicon_Garage2.Models.ApplicationUser", b =>
                 {
                     b.Navigation("Vehicles");
+                });
+
+            modelBuilder.Entity("lexicon_Garage2.Models.Vehicle", b =>
+                {
+                    b.Navigation("ParkingSpots");
                 });
 #pragma warning restore 612, 618
         }

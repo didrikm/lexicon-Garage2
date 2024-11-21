@@ -394,13 +394,24 @@ namespace lexicon_Garage2.Migrations
 
             modelBuilder.Entity("lexicon_Garage2.Models.Vehicle", b =>
                 {
+                    b.HasOne("lexicon_Garage2.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany("Vehicles")
+                        .HasForeignKey("ApplicationUserId");
+
                     b.HasOne("lexicon_Garage2.Models.VehicleType", "VehicleType")
                         .WithMany()
                         .HasForeignKey("VehicleTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("ApplicationUser");
+
                     b.Navigation("VehicleType");
+                });
+
+            modelBuilder.Entity("lexicon_Garage2.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("Vehicles");
                 });
 
             modelBuilder.Entity("lexicon_Garage2.Models.Vehicle", b =>

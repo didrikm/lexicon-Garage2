@@ -1,27 +1,24 @@
-﻿namespace lexicon_Garage2.Models
+﻿using lexicon_Garage2.Models;
+
+public class ReceiptViewModel
 {
-    public class ReceiptViewModel
+    public string RegistrationNumber { get; set; }
+    public DateTime CheckInTime { get; set; }
+    public DateTime CheckOutTime { get; set; }
+    public TimeSpan DurationOfParking { get; set; }
+    public decimal Total { get; set; }
+
+    public ReceiptViewModel(Vehicle vehicle, decimal parkingHourlyPrice)
     {
-        public string RegistrationNumber { get; set; }
-        public DateTime CheckInTime { get; set; }
-        public DateTime CheckOutTime { get; set; }
-        public TimeSpan DurationOfParking { get; set; }
-        public decimal Total { get; set; }
-        public int ParkingSpotNumber { get; set; }
+        RegistrationNumber = vehicle.RegistrationNumber;
+        CheckInTime = vehicle.ParkingTime;
+        CheckOutTime = DateTime.Now;
+        DurationOfParking = CheckOutTime - CheckInTime;
+        Total = parkingHourlyPrice * (decimal)DurationOfParking.TotalHours;
+    }
 
-        public ReceiptViewModel(Vehicle vehicle, decimal parkingHourlyPrice)
-        {
-            RegistrationNumber = vehicle.RegistrationNumber;
-            CheckInTime = vehicle.ParkingTime;
-            CheckOutTime = DateTime.Now;
-            DurationOfParking = CheckOutTime - CheckInTime;
-            Total = parkingHourlyPrice * (decimal)DurationOfParking.TotalHours;
-            ParkingSpotNumber = vehicle.ParkingSpot ?? 0; // Set the parking spot number
-        }
-
-        public string GetFormattedDuration()
-        {
-            return $"{DurationOfParking.Hours} h {DurationOfParking.Minutes} m {DurationOfParking.Seconds} s";
-        }
+    public string GetFormattedDuration()
+    {
+        return $"{DurationOfParking.Hours} h {DurationOfParking.Minutes} m {DurationOfParking.Seconds} s";
     }
 }

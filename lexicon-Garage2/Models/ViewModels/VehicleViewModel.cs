@@ -15,6 +15,7 @@
             Brand = vehicle.Brand;
             Model = vehicle.Model;
             NumberOfWheels = vehicle.NumberOfWheels;
+            ParkingSpotsTaken = vehicle.ParkingSpots.Count;
         }
 
         public int Id { get; set; }
@@ -29,5 +30,8 @@
         public string Brand { get; set; }
         public string Model { get; set; }
         public int NumberOfWheels { get; set; }
+
+        //public int ParkingSpot { get; set; }
+        public int? ParkingSpotsTaken { get; set; } //Hette ParkingSpotNumber innan och visade vilken plats fordonet är parkerat på
     }
 }

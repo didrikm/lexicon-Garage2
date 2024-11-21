@@ -193,8 +193,9 @@ namespace lexicon_Garage2.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
-    [Bind("VehicleType,RegistrationNumber,Color,Brand,Model,NumberOfWheels")]
-    VehicleViewModel vehicleViewModel)
+            [Bind("VehicleType,RegistrationNumber,Color,Brand,Model,NumberOfWheels")]
+                VehicleViewModel vehicleViewModel
+        )
         {
             // Check if there are available spots
             if (GetAvailableSpots() <= 0)
@@ -233,10 +234,10 @@ namespace lexicon_Garage2.Controllers
                         Brand = vehicleViewModel.Brand,
                         Model = vehicleViewModel.Model,
                         NumberOfWheels = vehicleViewModel.NumberOfWheels,
-                        //ApplicationUserId = currentUser.Id, // Set the UserId (Foreign Key)
-                        //ApplicationUser = currentUser, // Set the navigation property
+                        ApplicationUserId = currentUser.Id, // Set the UserId (Foreign Key)
+                        ApplicationUser = currentUser, // Set the navigation property
                         ParkingSpot = nextAvailableSpot,
-                        ParkingTime = DateTime.Now
+                        ParkingTime = DateTime.Now,
                     };
 
                     // Add the vehicle to the context and save changes
@@ -265,7 +266,6 @@ namespace lexicon_Garage2.Controllers
             TempData["ErrorMessage"] = "Could not park the vehicle. Please check your inputs.";
             return View(vehicleViewModel);
         }
-
 
         // GET: Vehicles/Edit/5
         public async Task<IActionResult> Edit(int? id)

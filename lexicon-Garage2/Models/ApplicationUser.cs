@@ -17,5 +17,7 @@ namespace lexicon_Garage2.Models
 
         [Required]
         public string LastName { get; set; }
+
+        public ICollection<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
     }
 }

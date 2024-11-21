@@ -455,5 +455,14 @@ namespace lexicon_Garage2.Controllers
         {
             return await _context.Vehicles.AnyAsync(v => v.Id == id);
         }
+        //GET Add spot
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddSpot() 
+        {
+            var parkingSpot = new ParkingSpot();
+            _context.ParkingSpots.Add(parkingSpot);
+            return RedirectToAction(nameof(ParkingSpot));
+        }
     }
 }

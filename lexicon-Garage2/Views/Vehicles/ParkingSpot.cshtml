@@ -1,21 +1,8 @@
 ﻿@model IEnumerable<ParkingSpotViewModel>
 
-
-@{
-    var parkingSpot = Model.FirstOrDefault();
-    var currentMaxCapacity = parkingSpot?.MaxCapacity ?? 10; // Hämta nuvarande maxkapacitet
-}
-
 <h2>Parking Spot Settings</h2>
 
-@* Formulär för att uppdatera MaxCapacity *@
-<form asp-action="UpdateMaxCapacity" method="post">
-    <div>
-        <label for="newCapacity">Change Capacity:</label>
-        <input type="number" id="newCapacity" name="newCapacity" min="1" value="@currentMaxCapacity" required />
-        <button type="submit">Update</button>
-    </div>
-</form>
+<button asp-action="AddSpot">+</button>
 
 <div class="row">
     @foreach (var spot in Model) // Change ViewBag to Model

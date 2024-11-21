@@ -1,0 +1,37 @@
+﻿@model IEnumerable<MemberViewModel>
+
+@{
+    ViewData["Title"] = "Members";
+}
+
+<h1 class="my-5">Members List</h1>
+
+<div class="list-group">
+    @foreach (var member in Model)
+    {
+        <!-- List item for each member -->
+        <div class="list-group-item">
+            <a href="#collapse-@member.Owner.Replace(" ", "-")" data-bs-toggle="collapse" class="text-decoration-none">
+                <strong>@member.Owner</strong>
+            </a>
+            <p class="mb-1">
+                <strong>@member.Owner</strong> has parked <strong>@member.VehicleCount</strong> vehicle(s),
+                and their total cost is <strong>@member.TotalPrice.ToString("C", new System.Globalization.CultureInfo("sv-SE"))</strong>.
+            </p>
+
+            
+            <div class="collapse" id="collapse-@member.Owner.Replace(" ", "-")">
+                <ul class="list-group mt-2">
+                    @foreach (var vehicle in member.Vehicles)
+                    {
+                        <li class="list-group-item">
+                            <strong>Registration Number:</strong> @vehicle.RegistrationNumber <br>
+                            <strong>Type:</strong> @vehicle.VehicleType <br>
+                            <strong>Color:</strong> @vehicle.Color
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
+</div>

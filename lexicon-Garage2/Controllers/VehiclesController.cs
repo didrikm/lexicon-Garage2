@@ -1,6 +1,7 @@
 ﻿using lexicon_Garage2.Data;
 using lexicon_Garage2.Migrations;
 using lexicon_Garage2.Models;
+using lexicon_Garage2.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -76,6 +77,33 @@ namespace lexicon_Garage2.Controllers
             }
 
             return null; // Om alla platser är upptagna
+        }
+
+        //Member view Point.6 Garage 3.0
+        public IActionResult Members(string searchQuery, string sortOrder)
+        {
+            decimal parkingHourlyPrice = 5.00m; // Pris per timme
+            var members = _context
+                .Users.Include(u => u.Vehicles) // Hämtar användare och deras fordon
+                .ToList()
+                .Select(user => new MemberViewModel(user, parkingHourlyPrice)) // Mappar till MemberViewModel
+                .ToList();
+
+            // Sökfunktion
+            if (!string.IsNullOrWhiteSpace(searchQuery))
+            {
+                members = members
+                    .Where(m => m.Owner.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
+
+            // Sorteringsfunktion
+            members =
+                sortOrder?.ToLower() == "desc"
+                    ? members.OrderByDescending(m => m.Owner).ToList()
+                    : members.OrderBy(m => m.Owner).ToList();
+
+            return View(members);
         }
 
         public async Task<IActionResult> ParkedVehicle()

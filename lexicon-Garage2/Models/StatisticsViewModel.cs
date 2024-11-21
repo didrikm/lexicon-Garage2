@@ -6,8 +6,7 @@
         public int NumberOfWheelsInGarage { get; set; }
         public decimal UnrealizedParkingRevenue { get; set; }
         public decimal AccumulatedParkingRevenueView { get; set; }
-        public StatisticsViewModel() { 
-            
-        }
+
+        public StatisticsViewModel() { }
     }
 }

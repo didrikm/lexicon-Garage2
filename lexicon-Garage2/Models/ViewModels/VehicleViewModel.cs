@@ -1,4 +1,4 @@
-﻿namespace lexicon_Garage2.Models
+﻿namespace lexicon_Garage2.Models.ViewModels
 {
     public class VehicleViewModel
     {
@@ -28,6 +28,6 @@
         public string Color { get; set; }
         public string Brand { get; set; }
         public string Model { get; set; }
-        public int NumberOfWheels { get; set; } // Added this property
+        public int NumberOfWheels { get; set; }
     }
 }

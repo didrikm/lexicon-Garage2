@@ -78,6 +78,26 @@ namespace lexicon_Garage2.Controllers
             return null; // Om alla platser är upptagna
         }
 
+        public async Task<IActionResult> ParkedVehicle()
+        {
+            // Hämta alla fordon och inkludera relaterad användare
+            var parkedVehicles = await _context
+                .Vehicle.Include(v => v.ApplicationUser) // Inkludera navigeringsegenskapen för ägaren
+                .ToListAsync();
+
+            // Skapa en lista av ViewModels baserad på de hämtade fordonen
+            var viewModel = parkedVehicles
+                .Where(vehicle => vehicle.ApplicationUser != null) // Exkludera poster utan ägare
+                .Select(vehicle => new ParkedVehicleViewModel(
+                    vehicle,
+                    vehicle.ApplicationUser // Skicka relaterad ApplicationUser som ägare
+                ))
+                .ToList();
+
+            // Returnera vyn med ViewModel
+            return View(viewModel);
+        }
+
         public async Task<IActionResult> ParkingSpot()
         {
             ViewBag.AvailableSpots = GetAvailableSpots();

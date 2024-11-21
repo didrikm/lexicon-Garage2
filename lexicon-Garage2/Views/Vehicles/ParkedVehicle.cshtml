@@ -1,0 +1,30 @@
+﻿@model IEnumerable<lexicon_Garage2.Models.ParkedVehicleViewModel>
+
+@{
+    ViewData["Title"] = "Parked Vehicles";
+}
+
+<h1 class="my-5">Parked Vehicles</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Owner</th>
+            <th>Registration Number</th>
+            <th>Arrival Time</th>
+            <th>Vehicle Type</th>
+            <th>Parking Spot</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var vehicle in Model)
+        {
+            <tr>
+                <td>@vehicle.Owner</td>
+                <td>@vehicle.RegistrationNumber</td>
+                <td>@vehicle.ArrivalTime.ToString("yyyy-MM-dd HH:mm:ss")</td>
+            </tr>
+        }
+    </tbody>
+</table>

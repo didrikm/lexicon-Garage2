@@ -24,6 +24,11 @@ namespace lexicon_Garage2.Data
             modelBuilder.Entity<Vehicle>().HasIndex(v => v.RegistrationNumber).IsUnique();
 
             modelBuilder.Entity<ApplicationUser>().HasIndex(u => u.Id).IsUnique();
+            // Konfigurera relationen mellan Vehicle och ParkingSpot
+            modelBuilder.Entity<ParkingSpot>()
+                .HasOne(p => p.Vehicle) // En ParkingSpot kan ha ett fordon
+                .WithOne(v => v.ParkingSpot) // Ett fordon har exakt en ParkingSpot
+                .HasForeignKey<ParkingSpot>(p => p.VehicleId); // Sätt VehicleId som foreign key
         }
     }
 }

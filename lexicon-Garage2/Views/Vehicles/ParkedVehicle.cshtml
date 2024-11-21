@@ -5,26 +5,57 @@
 }
 
 <h1 class="my-5">Parked Vehicles</h1>
-
-<table class="table">
-    <thead>
+<table class="table table-striped">
+    <thead class="thead-dark">
         <tr>
             <th>Owner</th>
-            <th>Registration Number</th>
-            <th>Arrival Time</th>
-            <th>Vehicle Type</th>
+            <th>
+                <a asp-action="ParkedVehicle"
+                   asp-route-sortColumn="VehicleType"
+                   asp-route-sortOrder="@(ViewData["CurrentSort"]?.ToString() == "VehicleType_asc" ? "desc" : "asc")"
+                   class="text-dark">
+                    <!-- Use Bootstrap's text-dark class -->
+                    @Html.DisplayNameFor(model => model.VehicleType)
+                    @(ViewData["CurrentSort"]?.ToString() == "VehicleType_asc" ? "▼" : "▲")
+                </a>
+                <form asp-action="Garage" class="d-inline">
+                    <input type="text" name="searchTerm" placeholder="Filter by vehicle type" class="form-control filter-input" />
+                </form>
+            </th>
+            <th>
+                <a asp-action="ParkedVehicle"
+                   asp-route-sortColumn="RegistrationNumber"
+                   asp-route-sortOrder="@(ViewData["CurrentSort"]?.ToString() == "RegistrationNumber_asc" ? "desc" : "asc")"
+                   class="text-dark">
+                    <!-- Use Bootstrap's text-dark class -->
+                    @Html.DisplayNameFor(model => model.RegistrationNumber)
+                    @(ViewData["CurrentSort"]?.ToString() == "RegistrationNumber_asc" ? "▼" : "▲")
+                </a>
+                <form asp-action="Garage" class="d-inline">
+                    <input type="text" name="searchTerm" placeholder="Filter by registration number" class="form-control filter-input" />
+                </form>
+            </th>
+            <th>
+                Arrival Time
+            </th>
             <th>Parking Spot</th>
 
         </tr>
     </thead>
+
     <tbody>
-        @foreach (var vehicle in Model)
+        @foreach (var item in Model)
         {
             <tr>
-                <td>@vehicle.Owner</td>
-                <td>@vehicle.RegistrationNumber</td>
-                <td>@vehicle.ArrivalTime.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                <td>@Html.DisplayFor(modelItem => item.Owner)</td>
+
+                <td>@Html.DisplayFor(modelItem => item.VehicleType)</td>
+                <td>@Html.DisplayFor(modelItem => item.RegistrationNumber)</td>
+                <td>@Html.DisplayFor(modelItem => item.ArrivalTime)</td>
+                
+               
             </tr>
         }
     </tbody>
 </table>
+

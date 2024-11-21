@@ -5,6 +5,7 @@
         public string Owner { get; set; } // Owner: "Firstname Lastname"
         public string RegistrationNumber { get; set; }
         public DateTime ArrivalTime { get; set; }
+        public VehicleType VehicleType { get; set; }
 
         public ParkedVehicleViewModel(Vehicle vehicle, ApplicationUser user)
         {

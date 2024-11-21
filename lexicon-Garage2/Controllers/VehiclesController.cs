@@ -440,5 +440,14 @@ namespace lexicon_Garage2.Controllers
             TempData["SuccessMessage"] = $"Max capacity updated to {newCapacity}.";
             return RedirectToAction(nameof(ParkingSpot));
         }
+        //GET Add spot
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddSpot() 
+        {
+            var parkingSpot = new ParkingSpot();
+            _context.ParkingSpots.Add(parkingSpot);
+            return RedirectToAction(nameof(ParkingSpot));
+        }
     }
 }

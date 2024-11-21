@@ -14,7 +14,7 @@ namespace lexicon_Garage2.Data
         public lexicon_Garage2Context(DbContextOptions<lexicon_Garage2Context> options)
             : base(options) { }
 
-        public DbSet<Vehicle> Vehicle { get; set; } = default!;
+        public DbSet<Vehicle> Vehicles { get; set; } = default!;
         public DbSet<ParkingSpot> ParkingSpots { get; set; } = default!;
         public DbSet<VehicleType> VehicleTypes { get; set; } = default!;
 

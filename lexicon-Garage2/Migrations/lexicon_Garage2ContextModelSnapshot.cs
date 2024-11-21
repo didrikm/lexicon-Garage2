@@ -250,23 +250,12 @@ namespace lexicon_Garage2.Migrations
                     b.Property<bool>("IsOccupied")
                         .HasColumnType("bit");
 
-                    b.Property<int>("MaxCapacity")
-                        .HasColumnType("int");
-
-                    b.Property<string>("RegistrationNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("SpotNumber")
-                        .HasColumnType("int");
-
                     b.Property<int?>("VehicleId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("VehicleId")
-                        .IsUnique()
-                        .HasFilter("[VehicleId] IS NOT NULL");
+                    b.HasIndex("VehicleId");
 
                     b.ToTable("ParkingSpots");
                 });
@@ -315,7 +304,27 @@ namespace lexicon_Garage2.Migrations
 
                     b.HasIndex("VehicleTypeId");
 
-                    b.ToTable("Vehicle");
+                    b.ToTable("Vehicles");
+                });
+
+            modelBuilder.Entity("lexicon_Garage2.Models.VehicleType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Size")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TypeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("VehicleTypes");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -372,15 +381,26 @@ namespace lexicon_Garage2.Migrations
             modelBuilder.Entity("lexicon_Garage2.Models.ParkingSpot", b =>
                 {
                     b.HasOne("lexicon_Garage2.Models.Vehicle", "Vehicle")
-                        .WithOne("ParkingSpot")
-                        .HasForeignKey("lexicon_Garage2.Models.ParkingSpot", "VehicleId");
+                        .WithMany("ParkingSpots")
+                        .HasForeignKey("VehicleId");
 
                     b.Navigation("Vehicle");
                 });
 
             modelBuilder.Entity("lexicon_Garage2.Models.Vehicle", b =>
                 {
-                    b.Navigation("ParkingSpot");
+                    b.HasOne("lexicon_Garage2.Models.VehicleType", "VehicleType")
+                        .WithMany()
+                        .HasForeignKey("VehicleTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("VehicleType");
+                });
+
+            modelBuilder.Entity("lexicon_Garage2.Models.Vehicle", b =>
+                {
+                    b.Navigation("ParkingSpots");
                 });
 #pragma warning restore 612, 618
         }

@@ -193,9 +193,8 @@ namespace lexicon_Garage2.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
-            [Bind("Id,VehicleType,RegistrationNumber,Color,Brand,Model,NumberOfWheels")]
-                Vehicle vehicle
-        )
+    [Bind("VehicleType,RegistrationNumber,Color,Brand,Model,NumberOfWheels")]
+    VehicleViewModel vehicleViewModel)
         {
             // Check if there are available spots
             if (GetAvailableSpots() <= 0)
@@ -203,20 +202,47 @@ namespace lexicon_Garage2.Controllers
                 TempData["ErrorMessage"] = "The garage is full. No more spots are available!";
                 return RedirectToAction(nameof(Garage));
             }
-            // Hämta nästa tillgängliga parkeringsplats
+
+            // Get the next available parking spot
             var nextAvailableSpot = GetNextAvailableSpot();
             if (nextAvailableSpot == null)
             {
                 TempData["ErrorMessage"] = "The garage is full - no available spots.";
                 return RedirectToAction(nameof(Garage));
             }
+
             if (ModelState.IsValid)
             {
                 try
                 {
-                    vehicle.ParkingSpot = nextAvailableSpot; // Tilldela den lediga platsen till fordonet
+                    // Get the currently logged-in user
+                    var currentUser = await _userManager.GetUserAsync(User);
+
+                    if (currentUser == null)
+                    {
+                        TempData["ErrorMessage"] = "User not found.";
+                        return RedirectToAction(nameof(Garage));
+                    }
+
+                    // Map the VehicleViewModel to the Vehicle entity
+                    var vehicle = new Vehicle
+                    {
+                        VehicleType = vehicleViewModel.VehicleType,
+                        RegistrationNumber = vehicleViewModel.RegistrationNumber,
+                        Color = vehicleViewModel.Color,
+                        Brand = vehicleViewModel.Brand,
+                        Model = vehicleViewModel.Model,
+                        NumberOfWheels = vehicleViewModel.NumberOfWheels,
+                        //ApplicationUserId = currentUser.Id, // Set the UserId (Foreign Key)
+                        //ApplicationUser = currentUser, // Set the navigation property
+                        ParkingSpot = nextAvailableSpot,
+                        ParkingTime = DateTime.Now
+                    };
+
+                    // Add the vehicle to the context and save changes
                     _context.Add(vehicle);
                     await _context.SaveChangesAsync();
+
                     TempData["SuccessMessage"] = "Parking has started.";
                     return RedirectToAction(nameof(Garage));
                 }
@@ -230,12 +256,16 @@ namespace lexicon_Garage2.Controllers
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Bigly error: ", ex);
+                    // Log or handle any other exception
+                    Console.WriteLine("Error: ", ex);
+                    TempData["ErrorMessage"] = "An unexpected error occurred.";
                 }
             }
+
             TempData["ErrorMessage"] = "Could not park the vehicle. Please check your inputs.";
-            return View(vehicle);
+            return View(vehicleViewModel);
         }
+
 
         // GET: Vehicles/Edit/5
         public async Task<IActionResult> Edit(int? id)

@@ -305,13 +305,15 @@ namespace lexicon_Garage2.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<int>("VehicleType")
+                    b.Property<int>("VehicleTypeId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("RegistrationNumber")
                         .IsUnique();
+
+                    b.HasIndex("VehicleTypeId");
 
                     b.ToTable("Vehicle");
                 });

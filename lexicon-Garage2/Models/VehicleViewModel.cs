@@ -8,14 +8,14 @@
             VehicleType = vehicle.VehicleType;
             RegistrationNumber = vehicle.RegistrationNumber;
             ArrivalTime = vehicle.ParkingTime;
-            ParkingSpotNumber = vehicle.ParkingSpot?.SpotNumber;
+            ParkingSpotsTaken = vehicle.ParkingSpots.Count; 
         }
 
         public int Id { get; set; }
         public VehicleType VehicleType { get; set; }
         public string RegistrationNumber { get; set; }
         public DateTime ArrivalTime { get; set; }
-        public int ParkingSpot { get; set; }
-        public int? ParkingSpotNumber { get; set; }
+        //public int ParkingSpot { get; set; }
+        public int? ParkingSpotsTaken { get; set; }  //Hette ParkingSpotNumber innan och visade vilken plats fordonet är parkerat på
     }
 }

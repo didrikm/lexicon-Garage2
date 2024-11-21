@@ -14,8 +14,9 @@ namespace lexicon_Garage2.Data
         public lexicon_Garage2Context(DbContextOptions<lexicon_Garage2Context> options)
             : base(options) { }
 
-        public DbSet<lexicon_Garage2.Models.Vehicle> Vehicle { get; set; } = default!;
-        public DbSet<ParkingSpot> ParkingSpots { get; set; }
+        public DbSet<Vehicle> Vehicle { get; set; } = default!;
+        public DbSet<ParkingSpot> ParkingSpots { get; set; } = default!;
+        public DbSet<VehicleType> VehicleTypes { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

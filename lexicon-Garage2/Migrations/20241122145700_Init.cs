@@ -6,11 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace lexicon_Garage2.Migrations
 {
     /// <inheritdoc />
-<<<<<<<< HEAD:lexicon-Garage2/Migrations/20241121222828_Initial.cs
-    public partial class Initial : Migration
-========
     public partial class Init : Migration
->>>>>>>> luna/lunaDev:lexicon-Garage2/Migrations/20241122090140_Init.cs
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

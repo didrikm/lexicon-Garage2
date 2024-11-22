@@ -303,10 +303,6 @@ namespace lexicon_Garage2.Controllers
                 {
                     ViewData["VehicleTypes"] = await _context.VehicleTypes.ToListAsync();
 
-                    vehicle.ParkingSpots.Add(availableSpot);
-                    availableSpot.IsOccupied = true;
-
-                    _context.Vehicles.Add(vehicle);
                     // Get the currently logged-in user
                     var currentUser = await _userManager.GetUserAsync(User);
 
@@ -331,10 +327,10 @@ namespace lexicon_Garage2.Controllers
                         ParkingTime = DateTime.Now,
                     };
 
-                    // Add the vehicle to the context and save changes
-                    vehicle.ParkingSpots.Add(nextAvailableSpot); // Tilldela den lediga platsen till fordonet
-                    _context.Add(vehicle);
-                    await _context.SaveChangesAsync();
+                    vehicle.ParkingSpots.Add(availableSpot);
+                    availableSpot.IsOccupied = true;
+
+                    _context.Vehicles.Add(vehicle);
 
                     TempData["SuccessMessage"] =
                         $"Vehicle parked at spot #{availableSpot.SpotNumber}.";

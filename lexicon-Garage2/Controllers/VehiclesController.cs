@@ -57,17 +57,20 @@ namespace lexicon_Garage2.Controllers
         }
         public async Task<int> GetAvailableSpotsAsync()
         { 
-            int occipiedSpots = 0;
+            int occupiedSpots = 0;
 
-            foreach (var vehicle in await _context.Vehicles.ToListAsync())
+            foreach (var parkingSpot in await _context.ParkingSpots.ToListAsync())
             {
-                occipiedSpots += vehicle.Size;
+                if (parkingSpot.IsOccupied)
+                {
+                    occupiedSpots++;
+                }
             }
         
 
             var totalSpots = await _context.ParkingSpots.ToListAsync();
 
-            return totalSpots.Count() - occipiedSpots;
+            return totalSpots.Count() - occupiedSpots;
         }
 
         private async Task<ParkingSpot?> GetNextAvailableSpotAsync()
@@ -190,8 +193,9 @@ namespace lexicon_Garage2.Controllers
         }
 
         // GET: Vehicles/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            ViewData["VehicleTypes"] = await _context.VehicleTypes.ToListAsync();
             return View();
         }
 
@@ -199,7 +203,7 @@ namespace lexicon_Garage2.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
             [Bind("Id,VehicleType,RegistrationNumber,Color,Brand,Model,NumberOfWheels")]
-    Vehicle vehicle
+        Vehicle vehicle
         )
         {
             // Hämta en ledig parkeringsplats
@@ -216,9 +220,11 @@ namespace lexicon_Garage2.Controllers
             {
                 try
                 {
-                    
+                    ViewData["VehicleTypes"] = await _context.VehicleTypes.ToListAsync();
+
                     vehicle.ParkingSpots.Add(availableSpot);
                     availableSpot.IsOccupied = true; 
+
 
                     _context.Vehicles.Add(vehicle);
                     await _context.SaveChangesAsync();

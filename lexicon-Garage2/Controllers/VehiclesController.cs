@@ -56,7 +56,7 @@ namespace lexicon_Garage2.Controllers
             return parkingStatus;
         }
         public async Task<int> GetAvailableSpotsAsync()
-        { 
+        {
             int occupiedSpots = 0;
 
             foreach (var parkingSpot in await _context.ParkingSpots.ToListAsync())
@@ -66,7 +66,7 @@ namespace lexicon_Garage2.Controllers
                     occupiedSpots++;
                 }
             }
-        
+
 
             var totalSpots = await _context.ParkingSpots.ToListAsync();
 
@@ -76,7 +76,7 @@ namespace lexicon_Garage2.Controllers
         private async Task<ParkingSpot?> GetNextAvailableSpotAsync()
         {
             var firstAvailableSpot = await _context.ParkingSpots.FirstOrDefaultAsync(ps => ps.Vehicle == null);
-                
+
             if (firstAvailableSpot == null)
             {
                 return null; // Om alla platser är upptagna
@@ -202,10 +202,13 @@ namespace lexicon_Garage2.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
-            [Bind("Id,VehicleType,RegistrationNumber,Color,Brand,Model,NumberOfWheels")]
+            [Bind("Id,VehicleType.Id,RegistrationNumber,Color,Brand,Model,NumberOfWheels")]
         Vehicle vehicle
         )
         {
+
+            ViewData["VehicleTypes"] = await _context.VehicleTypes.ToListAsync();
+
             // Hämta en ledig parkeringsplats
             var availableSpot = await _context.ParkingSpots
                 .FirstOrDefaultAsync(spot => !spot.IsOccupied);
@@ -215,16 +218,20 @@ namespace lexicon_Garage2.Controllers
                 TempData["ErrorMessage"] = "The garage is full. No available parking spots.";
                 return RedirectToAction(nameof(Garage));
             }
+            Console.WriteLine(vehicle.VehicleType);
+
+            vehicle.ParkingSpots = vehicle.ParkingSpots ?? new List<ParkingSpot>();
+            vehicle.VehicleType = await _context.VehicleTypes.FindAsync(vehicle.VehicleType.Id);
+
+            vehicle.ParkingSpots.Add(availableSpot);
+            availableSpot.IsOccupied = true;
+
 
             if (ModelState.IsValid)
             {
                 try
                 {
                     ViewData["VehicleTypes"] = await _context.VehicleTypes.ToListAsync();
-
-                    vehicle.ParkingSpots.Add(availableSpot);
-                    availableSpot.IsOccupied = true; 
-
 
                     _context.Vehicles.Add(vehicle);
                     await _context.SaveChangesAsync();

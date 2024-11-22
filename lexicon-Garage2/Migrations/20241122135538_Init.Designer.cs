@@ -12,7 +12,7 @@ using lexicon_Garage2.Data;
 namespace lexicon_Garage2.Migrations
 {
     [DbContext(typeof(lexicon_Garage2Context))]
-    [Migration("20241122090140_Init")]
+    [Migration("20241122135538_Init")]
     partial class Init
     {
         /// <inheritdoc />

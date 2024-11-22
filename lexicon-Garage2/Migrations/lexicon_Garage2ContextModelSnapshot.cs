@@ -297,9 +297,6 @@ namespace lexicon_Garage2.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<int>("Size")
-                        .HasColumnType("int");
-
                     b.Property<int>("VehicleTypeId")
                         .HasColumnType("int");
 

@@ -95,6 +95,11 @@ namespace lexicon_Garage2.Controllers
             return View(await _context.Vehicles.ToListAsync());
         }
 
+        public async Task<IActionResult> VehicleTypeIndex()
+        {
+            return View(await _context.VehicleTypes.ToListAsync());
+        }
+
         // GET: Garage
         public async Task<IActionResult> Garage(
             string? searchTerm = null,

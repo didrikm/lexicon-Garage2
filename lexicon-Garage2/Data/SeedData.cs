@@ -1,5 +1,6 @@
 ﻿using lexicon_Garage2.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace lexicon_Garage2.Data
 {
@@ -12,6 +13,8 @@ namespace lexicon_Garage2.Data
         public static async Task Init(lexicon_Garage2Context _context, IServiceProvider services)
         {
             context = _context;
+
+            await AddVehicleTypesAsync();
 
             // Exit if roles already exist
             if (context.Roles.Any())
@@ -50,6 +53,34 @@ namespace lexicon_Garage2.Data
 
             if (user != null)
                 await AddUserToRoleAsync(user, "User");
+
+            
+        }
+
+        private static async Task AddVehicleTypesAsync()
+        {
+            await AddVehicleTypeAsync("Car", 1);
+            await AddVehicleTypeAsync("Motorcycle", 1);
+            await AddVehicleTypeAsync("Truck", 2);
+            await AddVehicleTypeAsync("Plane", 5);
+        }
+
+        private static async Task<VehicleType> AddVehicleTypeAsync(string typeName, int size)
+        {
+            if (await context.VehicleTypes.AnyAsync(vt => vt.TypeName == typeName))
+            {
+                return null;
+            }
+            var vehicleType = new VehicleType()
+            {
+                TypeName = typeName,
+                Size = size,
+            };
+            var result = context.Add(vehicleType);
+            await context.SaveChangesAsync();
+            
+
+            return vehicleType;
         }
 
         private static async Task AddUserToRoleAsync(ApplicationUser user, string roleName)

@@ -5,7 +5,9 @@
     ViewData["Title"] = "Parking Spot Overview";
 }
 <h2 class="my-5">Parking Spot Overview</h2>
-
+<form asp-action="CreateParkingSpot" method="post">
+    <button type="submit" class="btn btn-primary">Create Parking Spot</button>
+</form>
 <div class="alert alert-info text-center">
     There are <strong>@ViewBag.AvailableSpots</strong> spots available in the garage.
 </div>

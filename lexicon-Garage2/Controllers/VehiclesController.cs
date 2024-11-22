@@ -89,7 +89,7 @@ namespace lexicon_Garage2.Controllers
         //Member view Point.6 Garage 3.0
         public IActionResult Members(string searchQuery, string sortOrder)
         {
-            decimal parkingHourlyPrice = 5.00m; // Pris per timme
+            decimal parkingHourlyPrice = 100.00m; // Pris per timme
             var members = _context
                 .Users.Include(u => u.Vehicles) // Hämtar användare och deras fordon
                 .ToList()
@@ -104,32 +104,60 @@ namespace lexicon_Garage2.Controllers
                     .ToList();
             }
 
-            // Sorteringsfunktion
-            members =
-                sortOrder?.ToLower() == "desc"
-                    ? members.OrderByDescending(m => m.Owner).ToList()
-                    : members.OrderBy(m => m.Owner).ToList();
-
             return View(members);
         }
 
-        public async Task<IActionResult> ParkedVehicle()
+        public async Task<IActionResult> ParkedVehicle(
+            string? searchTerm = null,
+            string sortColumn = "VehicleType", // Default to sorting by VehicleType
+            string sortOrder = "asc"
+        )
         {
-            // Hämta alla fordon och inkludera relaterad användare
-            var parkedVehicles = await _context
-                .Vehicles.Include(v => v.ApplicationUser) // Inkludera navigeringsegenskapen för ägaren
-                .ToListAsync();
+            // Get the base query
+            IQueryable<Vehicle> vehicles = _context.Vehicles.Include(v => v.ApplicationUser);
 
-            // Skapa en lista av ViewModels baserad på de hämtade fordonen
-            var viewModel = parkedVehicles
-                .Where(vehicle => vehicle.ApplicationUser != null) // Exkludera poster utan ägare
+            // Search functionality
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                vehicles = vehicles.Where(v =>
+                    v.RegistrationNumber.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
+                    || v.VehicleType.TypeName.Contains(
+                        searchTerm,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                );
+            }
+
+            // Sorting functionality
+            vehicles = sortColumn switch
+            {
+                "RegistrationNumber" => sortOrder == "asc"
+                    ? vehicles.OrderBy(v => v.RegistrationNumber)
+                    : vehicles.OrderByDescending(v => v.RegistrationNumber),
+                "VehicleType" => sortOrder == "asc"
+                    ? vehicles.OrderBy(v => v.VehicleType.TypeName)
+                    : vehicles.OrderByDescending(v => v.VehicleType.TypeName),
+                _ => vehicles.OrderBy(v =>
+                    v.VehicleType.TypeName
+                ) // Default sort by VehicleType
+                ,
+            };
+
+            // Generate ViewModel
+            var viewModel = await vehicles
+                .Where(vehicle => vehicle.ApplicationUser != null) // Exclude vehicles without owners
                 .Select(vehicle => new ParkedVehicleViewModel(
                     vehicle,
-                    vehicle.ApplicationUser // Skicka relaterad ApplicationUser som ägare
+                    vehicle.ApplicationUser // Include related ApplicationUser  for owner details
                 ))
-                .ToList();
+                .ToListAsync();
 
-            // Returnera vyn med ViewModel
+            // Current sort info for the frontend
+            ViewData["CurrentSort"] = $"{sortColumn}_{sortOrder}";
+
+            // Pass the search term back to the view to retain it in the filter input
+            ViewData["SearchTerm"] = searchTerm;
+
             return View(viewModel);
         }
 
@@ -455,10 +483,11 @@ namespace lexicon_Garage2.Controllers
         {
             return await _context.Vehicles.AnyAsync(v => v.Id == id);
         }
+
         //GET Add spot
         [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddSpot() 
+        public async Task<IActionResult> AddSpot()
         {
             var parkingSpot = new ParkingSpot();
             _context.ParkingSpots.Add(parkingSpot);

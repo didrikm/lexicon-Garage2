@@ -18,7 +18,7 @@
                     @Html.DisplayNameFor(model => model.VehicleType)
                     @(ViewData["CurrentSort"]?.ToString() == "VehicleType_asc" ? "▼" : "▲")
                 </a>
-                <form asp-action="Garage" class="d-inline">
+                <form asp-action="ParkedVehicle" class="d-inline">
                     <input type="text" name="searchTerm" placeholder="Filter by vehicle type" class="form-control filter-input" />
                 </form>
             </th>
@@ -31,7 +31,7 @@
                     @Html.DisplayNameFor(model => model.RegistrationNumber)
                     @(ViewData["CurrentSort"]?.ToString() == "RegistrationNumber_asc" ? "▼" : "▲")
                 </a>
-                <form asp-action="Garage" class="d-inline">
+                <form asp-action="ParkedVehicle" class="d-inline">
                     <input type="text" name="searchTerm" placeholder="Filter by registration number" class="form-control filter-input" />
                 </form>
             </th>

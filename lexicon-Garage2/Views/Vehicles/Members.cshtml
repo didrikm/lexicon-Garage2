@@ -5,7 +5,16 @@
 }
 
 <h1 class="my-5">Members List</h1>
-
+<form method="get" asp-action="Members" class="mb-4">
+    <div class="input-group">
+        <input type="text"
+               name="searchQuery"
+               class="form-control"
+               placeholder="Search by owner name..."
+               value=""searchQuery"]" />
+        <button class="btn btn-primary" type="submit">Search</button>
+    </div>
+</form>
 <div class="list-group">
     @foreach (var member in Model)
     {

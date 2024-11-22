@@ -12,13 +12,8 @@ using lexicon_Garage2.Data;
 namespace lexicon_Garage2.Migrations
 {
     [DbContext(typeof(lexicon_Garage2Context))]
-<<<<<<<< HEAD:lexicon-Garage2/Migrations/20241121222828_Initial.Designer.cs
-    [Migration("20241121222828_Initial")]
-    partial class Initial
-========
-    [Migration("20241122090140_Init")]
-    partial class Init
->>>>>>>> luna/lunaDev:lexicon-Garage2/Migrations/20241122090140_Init.Designer.cs
+    [Migration("20241122101249_ChangeVehicle")]
+    partial class ChangeVehicle
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -279,9 +274,6 @@ namespace lexicon_Garage2.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("Brand")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -308,12 +300,13 @@ namespace lexicon_Garage2.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<int>("Size")
+                        .HasColumnType("int");
+
                     b.Property<int>("VehicleTypeId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("RegistrationNumber")
                         .IsUnique();
@@ -405,24 +398,13 @@ namespace lexicon_Garage2.Migrations
 
             modelBuilder.Entity("lexicon_Garage2.Models.Vehicle", b =>
                 {
-                    b.HasOne("lexicon_Garage2.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany("Vehicles")
-                        .HasForeignKey("ApplicationUserId");
-
                     b.HasOne("lexicon_Garage2.Models.VehicleType", "VehicleType")
                         .WithMany()
                         .HasForeignKey("VehicleTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ApplicationUser");
-
                     b.Navigation("VehicleType");
-                });
-
-            modelBuilder.Entity("lexicon_Garage2.Models.ApplicationUser", b =>
-                {
-                    b.Navigation("Vehicles");
                 });
 
             modelBuilder.Entity("lexicon_Garage2.Models.Vehicle", b =>

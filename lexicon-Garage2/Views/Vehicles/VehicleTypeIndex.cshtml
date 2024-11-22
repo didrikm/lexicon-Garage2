@@ -1,0 +1,33 @@
+﻿@model IEnumerable<lexicon_Garage2.Models.VehicleType>
+
+@{
+    ViewData["Title"] = "VehicleTypes";
+}
+
+<h1>VehicleTypes</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.TypeName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Size)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.TypeName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Size)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

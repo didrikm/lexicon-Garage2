@@ -1,8 +1,16 @@
 ﻿@model IEnumerable<ParkingSpotViewModel>
 
-<h2>Parking Spot Settings</h2>
 
-<button asp-action="AddSpot">+</button>
+@{
+    ViewData["Title"] = "Parking Spot Overview";
+}
+<h2 class="my-5">Parking Spot Overview</h2>
+<form asp-action="CreateParkingSpot" method="post">
+    <button type="submit" class="btn btn-primary">Create Parking Spot</button>
+</form>
+<div class="alert alert-info text-center">
+    There are <strong>@ViewBag.AvailableSpots</strong> spots available in the garage.
+</div>
 
 <div class="row">
     @foreach (var spot in Model) // Change ViewBag to Model

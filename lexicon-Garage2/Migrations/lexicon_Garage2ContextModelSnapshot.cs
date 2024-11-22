@@ -250,6 +250,9 @@ namespace lexicon_Garage2.Migrations
                     b.Property<bool>("IsOccupied")
                         .HasColumnType("bit");
 
+                    b.Property<int>("SpotNumber")
+                        .HasColumnType("int");
+
                     b.Property<int?>("VehicleId")
                         .HasColumnType("int");
 
@@ -296,6 +299,9 @@ namespace lexicon_Garage2.Migrations
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
+
+                    b.Property<int>("Size")
+                        .HasColumnType("int");
 
                     b.Property<int>("VehicleTypeId")
                         .HasColumnType("int");

@@ -61,16 +61,19 @@ namespace lexicon_Garage2.Controllers
 
         public async Task<int> GetAvailableSpotsAsync()
         {
-            int occipiedSpots = 0;
+            int occupiedSpots = 0;
 
-            foreach (var vehicle in await _context.Vehicles.ToListAsync())
+            foreach (var parkingSpot in await _context.ParkingSpots.ToListAsync())
             {
-                occipiedSpots += vehicle.Size;
+                if (parkingSpot.IsOccupied)
+                {
+                    occupiedSpots++;
+                }
             }
 
             var totalSpots = await _context.ParkingSpots.ToListAsync();
 
-            return totalSpots.Count() - occipiedSpots;
+            return totalSpots.Count() - occupiedSpots;
         }
 
         private async Task<ParkingSpot?> GetNextAvailableSpotAsync()
@@ -175,6 +178,11 @@ namespace lexicon_Garage2.Controllers
             return View(await _context.Vehicles.ToListAsync());
         }
 
+        public async Task<IActionResult> VehicleTypeIndex()
+        {
+            return View(await _context.VehicleTypes.ToListAsync());
+        }
+
         // GET: Garage
         public async Task<IActionResult> Garage(
             string? searchTerm = null,
@@ -265,8 +273,9 @@ namespace lexicon_Garage2.Controllers
         }
 
         // GET: Vehicles/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            ViewData["VehicleTypes"] = await _context.VehicleTypes.ToListAsync();
             return View();
         }
 
@@ -277,11 +286,14 @@ namespace lexicon_Garage2.Controllers
                 VehicleViewModel vehicleViewModel
         )
         {
-            // Check if there are available spots
-            var nextAvailableSpot = await GetNextAvailableSpotAsync();
-            if (nextAvailableSpot == null)
+            // Hämta en ledig parkeringsplats
+            var availableSpot = await _context.ParkingSpots.FirstOrDefaultAsync(spot =>
+                !spot.IsOccupied
+            );
+
+            if (availableSpot == null)
             {
-                TempData["ErrorMessage"] = "The garage is full - no available spots.";
+                TempData["ErrorMessage"] = "The garage is full. No available parking spots.";
                 return RedirectToAction(nameof(Garage));
             }
 
@@ -289,6 +301,12 @@ namespace lexicon_Garage2.Controllers
             {
                 try
                 {
+                    ViewData["VehicleTypes"] = await _context.VehicleTypes.ToListAsync();
+
+                    vehicle.ParkingSpots.Add(availableSpot);
+                    availableSpot.IsOccupied = true;
+
+                    _context.Vehicles.Add(vehicle);
                     // Get the currently logged-in user
                     var currentUser = await _userManager.GetUserAsync(User);
 
@@ -318,7 +336,8 @@ namespace lexicon_Garage2.Controllers
                     _context.Add(vehicle);
                     await _context.SaveChangesAsync();
 
-                    TempData["SuccessMessage"] = "Parking has started.";
+                    TempData["SuccessMessage"] =
+                        $"Vehicle parked at spot #{availableSpot.SpotNumber}.";
                     return RedirectToAction(nameof(Garage));
                 }
                 catch (DbUpdateException ex)
@@ -484,13 +503,31 @@ namespace lexicon_Garage2.Controllers
             return await _context.Vehicles.AnyAsync(v => v.Id == id);
         }
 
-        //GET Add spot
+        //POST Add spot
         [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddSpot()
+        [HttpPost]
+        public async Task<IActionResult> CreateParkingSpot()
         {
-            var parkingSpot = new ParkingSpot();
-            _context.ParkingSpots.Add(parkingSpot);
+            // Hämta det högsta befintliga SpotNumber
+            var maxSpotNumber = _context.ParkingSpots.Any()
+                ? _context.ParkingSpots.Max(ps => ps.SpotNumber)
+                : 0;
+
+            // Skapa en ny ParkingSpot med nästa SpotNumber
+            var newSpot = new ParkingSpot
+            {
+                SpotNumber =
+                    maxSpotNumber
+                    + 1 // Tilldela nästa löpande nummer
+                ,
+            };
+
+            // Lägg till den nya ParkingSpot i databasen
+            _context.ParkingSpots.Add(newSpot);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = $"Parking spot {newSpot.SpotNumber} created successfully.";
             return RedirectToAction(nameof(ParkingSpot));
         }
     }

@@ -6,6 +6,6 @@
         public bool IsOccupied { get; set; }
 
         public string? RegistrationNumber { get; set; }
-        public int MaxCapacity { get; set; }
+
     }
 }

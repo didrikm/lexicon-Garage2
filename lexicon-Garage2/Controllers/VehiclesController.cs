@@ -199,14 +199,16 @@ namespace lexicon_Garage2.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
             [Bind("Id,VehicleType,RegistrationNumber,Color,Brand,Model,NumberOfWheels")]
-        Vehicle vehicle
+    Vehicle vehicle
         )
         {
-            // Check if there are available spots
-            var nextAvailableSpot = await GetNextAvailableSpotAsync();
-            if (nextAvailableSpot == null)
+            // Hämta en ledig parkeringsplats
+            var availableSpot = await _context.ParkingSpots
+                .FirstOrDefaultAsync(spot => !spot.IsOccupied);
+
+            if (availableSpot == null)
             {
-                TempData["ErrorMessage"] = "The garage is full - no available spots.";
+                TempData["ErrorMessage"] = "The garage is full. No available parking spots.";
                 return RedirectToAction(nameof(Garage));
             }
 
@@ -214,10 +216,14 @@ namespace lexicon_Garage2.Controllers
             {
                 try
                 {
-                    vehicle.ParkingSpots.Add(nextAvailableSpot); // Tilldela den lediga platsen till fordonet
-                    _context.Add(vehicle);
+                    
+                    vehicle.ParkingSpots.Add(availableSpot);
+                    availableSpot.IsOccupied = true; 
+
+                    _context.Vehicles.Add(vehicle);
                     await _context.SaveChangesAsync();
-                    TempData["SuccessMessage"] = "Parking has started.";
+
+                    TempData["SuccessMessage"] = $"Vehicle parked at spot #{availableSpot.SpotNumber}.";
                     return RedirectToAction(nameof(Garage));
                 }
                 catch (DbUpdateException ex)
@@ -230,13 +236,14 @@ namespace lexicon_Garage2.Controllers
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Error: ", ex);
+                    Console.WriteLine($"Error: {ex.Message}");
                 }
             }
 
             TempData["ErrorMessage"] = "Could not park the vehicle. Please check your inputs.";
             return View(vehicle);
         }
+
 
 
 
@@ -381,5 +388,33 @@ namespace lexicon_Garage2.Controllers
         {
             return await _context.Vehicles.AnyAsync(v => v.Id == id);
         }
+
+        //POST Add spot
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public async Task<IActionResult> CreateParkingSpot()
+        {
+            // Hämta det högsta befintliga SpotNumber
+            var maxSpotNumber = _context.ParkingSpots.Any()
+                ? _context.ParkingSpots.Max(ps => ps.SpotNumber)
+                : 0;
+
+            // Skapa en ny ParkingSpot med nästa SpotNumber
+            var newSpot = new ParkingSpot
+            {
+                SpotNumber = maxSpotNumber + 1 // Tilldela nästa löpande nummer
+            };
+
+            // Lägg till den nya ParkingSpot i databasen
+            _context.ParkingSpots.Add(newSpot);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = $"Parking spot {newSpot.SpotNumber} created successfully.";
+            return RedirectToAction(nameof(ParkingSpot));
+        }
+
+
+
     }
 }

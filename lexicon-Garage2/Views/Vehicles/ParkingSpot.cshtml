@@ -2,20 +2,15 @@
 
 
 @{
-    var parkingSpot = Model.FirstOrDefault();
-    var currentMaxCapacity = parkingSpot?.MaxCapacity ?? 10; // Hämta nuvarande maxkapacitet
+    ViewData["Title"] = "Parking Spot Overview";
 }
-
-<h2>Parking Spot Settings</h2>
-
-@* Formulär för att uppdatera MaxCapacity *@
-<form asp-action="UpdateMaxCapacity" method="post">
-    <div>
-        <label for="newCapacity">Change Capacity:</label>
-        <input type="number" id="newCapacity" name="newCapacity" min="1" value="@currentMaxCapacity" required />
-        <button type="submit">Update</button>
-    </div>
+<h2 class="my-5">Parking Spot Overview</h2>
+<form asp-action="CreateParkingSpot" method="post">
+    <button type="submit" class="btn btn-primary">Create Parking Spot</button>
 </form>
+<div class="alert alert-info text-center">
+    There are <strong>@ViewBag.AvailableSpots</strong> spots available in the garage.
+</div>
 
 <div class="row">
     @foreach (var spot in Model) // Change ViewBag to Model

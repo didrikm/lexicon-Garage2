@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace lexicon_Garage2.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -204,6 +204,7 @@ namespace lexicon_Garage2.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    SpotNumber = table.Column<int>(type: "int", nullable: false),
                     IsOccupied = table.Column<bool>(type: "bit", nullable: false),
                     VehicleId = table.Column<int>(type: "int", nullable: true)
                 },

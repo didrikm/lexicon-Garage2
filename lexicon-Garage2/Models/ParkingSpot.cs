@@ -3,25 +3,11 @@
     public class ParkingSpot
     {
         public int Id { get; set; } // Unik identifierare
+        public int SpotNumber { get; set; }
 
         public bool IsOccupied { get; set; } = false; // Status: ledig/upptagen
 
-        public Vehicle? Vehicle
-        {
-            get { return Vehicle; }
-            set
-            {
-                if (value == null)
-                {
-                    IsOccupied = false;
-                }
-                else
-                {
-                    IsOccupied = true;
-                }
-                Vehicle = value;
-            }
-        }
+        public Vehicle? Vehicle { get; set; }
         // Navigeringsproperty till fordon
     }
 }

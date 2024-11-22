@@ -12,8 +12,8 @@ using lexicon_Garage2.Data;
 namespace lexicon_Garage2.Migrations
 {
     [DbContext(typeof(lexicon_Garage2Context))]
-    [Migration("20241121160238_init")]
-    partial class init
+    [Migration("20241122090140_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -252,6 +252,9 @@ namespace lexicon_Garage2.Migrations
 
                     b.Property<bool>("IsOccupied")
                         .HasColumnType("bit");
+
+                    b.Property<int>("SpotNumber")
+                        .HasColumnType("int");
 
                     b.Property<int?>("VehicleId")
                         .HasColumnType("int");

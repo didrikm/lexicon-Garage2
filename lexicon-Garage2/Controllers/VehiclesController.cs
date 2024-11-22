@@ -212,10 +212,10 @@ namespace lexicon_Garage2.Controllers
                 try
                 {
                     
-                    vehicle.ParkingSpot = availableSpot;
+                    vehicle.ParkingSpots.Add(availableSpot);
                     availableSpot.IsOccupied = true; 
 
-                    _context.Vehicle.Add(vehicle);
+                    _context.Vehicles.Add(vehicle);
                     await _context.SaveChangesAsync();
 
                     TempData["SuccessMessage"] = $"Vehicle parked at spot #{availableSpot.SpotNumber}.";

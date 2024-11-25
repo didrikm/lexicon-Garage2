@@ -114,7 +114,7 @@ namespace lexicon_Garage2.Controllers
             ViewBag.AvailableSpots = await GetAvailableSpotsAsync();
             ViewBag.ParkingStatus = await GetParkingStatusAsync(); // Lägger till status för lediga/upptagna platser
 
-            IQueryable<Vehicle> vehicles = _context.Vehicles;
+            IQueryable<Vehicle> vehicles = _context.Vehicles.Include(v => v.VehicleType);
 
             if (!string.IsNullOrEmpty(searchTerm))
             {
@@ -158,7 +158,10 @@ namespace lexicon_Garage2.Controllers
             };
 
             var vehicleViewModels = await vehicles
-                .Select(vehicle => new VehicleViewModel(vehicle))
+                .Select(vehicle => new VehicleViewModel(vehicle)
+                {
+                    VehicleType = vehicle.VehicleType.TypeName,
+                })
                 .ToListAsync();
 
             ViewData["CurrentSort"] = $"{sortColumn}_{sortOrder}";
@@ -195,19 +198,14 @@ namespace lexicon_Garage2.Controllers
         // GET: Vehicles/Create
         public async Task<IActionResult> Create()
         {
-            ViewData["VehicleTypes"] = await _context.VehicleTypes.ToListAsync();
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("Id,VehicleType.Id,RegistrationNumber,Color,Brand,Model,NumberOfWheels")]
-        Vehicle vehicle
-        )
+        public async Task<IActionResult> Create(VehicleCreateViewmodel vehicleViewModel)
         {
 
-            ViewData["VehicleTypes"] = await _context.VehicleTypes.ToListAsync();
 
             // Hämta en ledig parkeringsplats
             var availableSpot = await _context.ParkingSpots
@@ -218,20 +216,26 @@ namespace lexicon_Garage2.Controllers
                 TempData["ErrorMessage"] = "The garage is full. No available parking spots.";
                 return RedirectToAction(nameof(Garage));
             }
-            Console.WriteLine(vehicle.VehicleType);
-
-            vehicle.ParkingSpots = vehicle.ParkingSpots ?? new List<ParkingSpot>();
-            vehicle.VehicleType = await _context.VehicleTypes.FindAsync(vehicle.VehicleType.Id);
-
-            vehicle.ParkingSpots.Add(availableSpot);
-            availableSpot.IsOccupied = true;
 
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    ViewData["VehicleTypes"] = await _context.VehicleTypes.ToListAsync();
+
+                    var vehicle = new Vehicle
+                    {
+                        Brand = vehicleViewModel.Brand,
+                        Color = vehicleViewModel.Color,
+                        NumberOfWheels = vehicleViewModel.NumberOfWheels,
+                        Model = vehicleViewModel.Model,
+                        VehicleTypeId = vehicleViewModel.VehicleTypeId,
+                        RegistrationNumber = vehicleViewModel.RegistrationNumber,
+                    };
+
+                    vehicle.ParkingSpots.Add(availableSpot);
+                    availableSpot.IsOccupied = true;
+
 
                     _context.Vehicles.Add(vehicle);
                     await _context.SaveChangesAsync();
@@ -254,7 +258,7 @@ namespace lexicon_Garage2.Controllers
             }
 
             TempData["ErrorMessage"] = "Could not park the vehicle. Please check your inputs.";
-            return View(vehicle);
+            return View(vehicleViewModel);
         }
 
 

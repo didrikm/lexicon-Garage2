@@ -1,6 +1,7 @@
 using lexicon_Garage2.Data;
 using lexicon_Garage2.Extensions;
 using lexicon_Garage2.Models;
+using lexicon_Garage2.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,6 +28,7 @@ builder
 
 // Add services to the container
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IVehicleTypeService, VehicleTypeService> ();
 
 var app = builder.Build();
 

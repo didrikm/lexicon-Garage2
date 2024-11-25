@@ -260,7 +260,7 @@ namespace lexicon_Garage2.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("ParkingSpots");
+                    b.ToTable("ParkingSpots", (string)null);
                 });
 
             modelBuilder.Entity("lexicon_Garage2.Models.Vehicle", b =>
@@ -307,7 +307,7 @@ namespace lexicon_Garage2.Migrations
 
                     b.HasIndex("VehicleTypeId");
 
-                    b.ToTable("Vehicles");
+                    b.ToTable("Vehicles", (string)null);
                 });
 
             modelBuilder.Entity("lexicon_Garage2.Models.VehicleType", b =>
@@ -327,7 +327,7 @@ namespace lexicon_Garage2.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("VehicleTypes");
+                    b.ToTable("VehicleTypes", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

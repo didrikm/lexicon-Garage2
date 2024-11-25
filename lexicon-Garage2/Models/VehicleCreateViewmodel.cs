@@ -2,12 +2,10 @@
 
 namespace lexicon_Garage2.Models
 {
-    public class Vehicle
+    public class VehicleCreateViewmodel
     {
-        public int Id { get; set; }
 
         public int VehicleTypeId { get; set; }
-        public VehicleType VehicleType { get; set; }
 
         [Required]
         [StringLength(20, MinimumLength = 3)]
@@ -29,14 +27,5 @@ namespace lexicon_Garage2.Models
         [Range(0, 20)]
         public int NumberOfWheels { get; set; }
 
-        public DateTime ParkingTime { get; set; }
-        public ICollection<ParkingSpot> ParkingSpots { get; set; }
-
-        public Vehicle()
-        {
-            ParkingTime = DateTime.Now;
-            ParkingSpots = new List<ParkingSpot>();
-
-        }
     }
 }

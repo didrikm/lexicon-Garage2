@@ -1,4 +1,6 @@
-﻿@model Vehicle
+﻿@using lexicon_Garage2.Services
+@model VehicleCreateViewmodel
+@inject IVehicleTypeService TypeService
 
 @{
     ViewData["Title"] = "Park";
@@ -15,15 +17,11 @@
 
                     @* Dropdown list for vehicle type *@
                     <div class="form-group mb-3">
-                        <label asp-for="VehicleType.Id" class="form-label text-dark fw-bold"></label>
-                        <select asp-for="VehicleType.Id" class="form-control border-dark text-dark">
+                        <label asp-for="VehicleTypeId" class="form-label text-dark fw-bold"></label>
+                        <select asp-for="VehicleTypeId" asp-items = "@await TypeService.GetVehicleTypesAsync()" class="form-control border-dark text-dark">
                             <option value="" disabled selected>Select Type</option>
-                            @foreach (var vehicleType in (List<VehicleType>)ViewData["VehicleTypes"])
-                            {
-                                <option value="@vehicleType.Id">@vehicleType.TypeName @vehicleType.Size</option>
-                            }
                         </select>
-                        <span asp-validation-for="VehicleType.Id" class="text-danger"></span>
+                        <span asp-validation-for="VehicleTypeId" class="text-danger"></span>
                     </div>
 
 

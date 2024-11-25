@@ -123,8 +123,9 @@ namespace lexicon_Garage2.Controllers
             // Search functionality
             if (!string.IsNullOrEmpty(searchTerm))
             {
+                // Use EF.Functions.Like for SQL-compatible case-insensitive search
                 vehicles = vehicles.Where(v =>
-                    v.RegistrationNumber.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
+                    EF.Functions.Like(v.RegistrationNumber, $"%{searchTerm}%")
                 );
             }
 
@@ -142,7 +143,7 @@ namespace lexicon_Garage2.Controllers
                 .Where(vehicle => vehicle.ApplicationUser != null) // Exclude vehicles without owners
                 .Select(vehicle => new ParkedVehicleViewModel(
                     vehicle,
-                    vehicle.ApplicationUser // Include related ApplicationUser  for owner details
+                    vehicle.ApplicationUser // Include related ApplicationUser for owner details
                 ))
                 .ToListAsync();
 

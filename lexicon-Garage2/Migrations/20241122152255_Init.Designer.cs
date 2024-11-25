@@ -12,7 +12,11 @@ using lexicon_Garage2.Data;
 namespace lexicon_Garage2.Migrations
 {
     [DbContext(typeof(lexicon_Garage2Context))]
+<<<<<<<< HEAD:lexicon-Garage2/Migrations/20241122152255_Init.Designer.cs
     [Migration("20241122152255_Init")]
+========
+    [Migration("20241122163633_Init")]
+>>>>>>>> TryVy:lexicon-Garage2/Migrations/20241122163633_Init.Designer.cs
     partial class Init
     {
         /// <inheritdoc />
@@ -274,6 +278,9 @@ namespace lexicon_Garage2.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Brand")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -305,6 +312,8 @@ namespace lexicon_Garage2.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ApplicationUserId");
+
                     b.HasIndex("RegistrationNumber")
                         .IsUnique();
 
@@ -315,11 +324,11 @@ namespace lexicon_Garage2.Migrations
 
             modelBuilder.Entity("lexicon_Garage2.Models.VehicleType", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int?>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"));
 
                     b.Property<int>("Size")
                         .HasColumnType("int");
@@ -395,13 +404,24 @@ namespace lexicon_Garage2.Migrations
 
             modelBuilder.Entity("lexicon_Garage2.Models.Vehicle", b =>
                 {
+                    b.HasOne("lexicon_Garage2.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany("Vehicles")
+                        .HasForeignKey("ApplicationUserId");
+
                     b.HasOne("lexicon_Garage2.Models.VehicleType", "VehicleType")
                         .WithMany()
                         .HasForeignKey("VehicleTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("ApplicationUser");
+
                     b.Navigation("VehicleType");
+                });
+
+            modelBuilder.Entity("lexicon_Garage2.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("Vehicles");
                 });
 
             modelBuilder.Entity("lexicon_Garage2.Models.Vehicle", b =>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Garage</title>
+    <title>@ViewData["Title"] Garage</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/lexicon_Garage2.styles.css" asp-append-version="true" />
@@ -20,23 +20,27 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-sm-0">
-                        <li class="nav-item">
+                        @* <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Vehicles" asp-action="Garage">Garage</a>
-                        </li>
+                        </li> *@
                        @if (User.Identity!.IsAuthenticated) {
                            @if (User.IsInRole("Admin")){
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Vehicles" asp-action="Admin">Admin</a>
                         </li>
+                       <li class="nav-item">
+                           <a class="nav-link" asp-area="" asp-controller="Vehicles" asp-action="ParkingSpot">Parking Spot</a>
+                       </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="Vehicles" asp-action="Members">Members</a>
+                                </li>
                            }
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Vehicles" asp-action="ParkedVehicle">Parked Vehicle</a>
+                            </li>
+                           
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Vehicles" asp-action="Statistics">Statistics</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Vehicles" asp-action="ParkingSpot">Parking Spot</a>
-                        </li>
-                        <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Vehicles" asp-action="VehicleTypeIndex">VehicleTypes</a>
                         </li>
                         }
                     </ul>

@@ -1,6 +1,6 @@
 ﻿using lexicon_Garage2.Data;
-
 using lexicon_Garage2.Models;
+using lexicon_Garage2.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -18,8 +18,6 @@ namespace lexicon_Garage2.Controllers
         public readonly decimal ParkingHourlyPrice = 100;
         public static decimal AccumulatedParkingRevenue { get; set; }
 
-
-
         public VehiclesController(
             UserManager<ApplicationUser> userManager,
             lexicon_Garage2Context context
@@ -31,7 +29,9 @@ namespace lexicon_Garage2.Controllers
 
         public async Task<List<ParkingSpotViewModel>> GetParkingStatusAsync()
         {
-            List<Vehicle> vehicles = await _context.Vehicles.Where(v => v.ParkingSpots.Any()).ToListAsync();
+            List<Vehicle> vehicles = await _context
+                .Vehicles.Where(v => v.ParkingSpots.Any())
+                .ToListAsync();
 
             List<ParkingSpotViewModel> parkingStatus = new();
 
@@ -39,22 +39,26 @@ namespace lexicon_Garage2.Controllers
 
             foreach (var parkingSpot in parkingSpots)
             {
-                var vehicleInSpot = vehicles.FirstOrDefault(v => v.ParkingSpots.Contains(parkingSpot));
+                var vehicleInSpot = vehicles.FirstOrDefault(v =>
+                    v.ParkingSpots.Contains(parkingSpot)
+                );
                 {
                     parkingStatus.Add(
-                    new ParkingSpotViewModel
-                    {
-                        SpotNumber = (parkingSpots.IndexOf(parkingSpot) + 1),
-                        IsOccupied = vehicleInSpot != null,
-                        RegistrationNumber =
-                            vehicleInSpot?.RegistrationNumber // Assign registration number if occupied
-                    }
-                );
+                        new ParkingSpotViewModel
+                        {
+                            SpotNumber = (parkingSpots.IndexOf(parkingSpot) + 1),
+                            IsOccupied = vehicleInSpot != null,
+                            RegistrationNumber =
+                                vehicleInSpot?.RegistrationNumber // Assign registration number if occupied
+                            ,
+                        }
+                    );
                 }
             }
 
             return parkingStatus;
         }
+
         public async Task<int> GetAvailableSpotsAsync()
         {
             int occupiedSpots = 0;
@@ -67,7 +71,6 @@ namespace lexicon_Garage2.Controllers
                 }
             }
 
-
             var totalSpots = await _context.ParkingSpots.ToListAsync();
 
             return totalSpots.Count() - occupiedSpots;
@@ -75,13 +78,90 @@ namespace lexicon_Garage2.Controllers
 
         private async Task<ParkingSpot?> GetNextAvailableSpotAsync()
         {
-            var firstAvailableSpot = await _context.ParkingSpots.FirstOrDefaultAsync(ps => ps.Vehicle == null);
+            var firstAvailableSpot = await _context.ParkingSpots.FirstOrDefaultAsync(ps =>
+                ps.Vehicle == null
+            );
 
             if (firstAvailableSpot == null)
             {
                 return null; // Om alla platser är upptagna
             }
             return firstAvailableSpot; // Returnera första lediga plats(om det finns någon)
+        }
+
+        //Member view Point.6 Garage 3.0
+        public IActionResult Members(string searchQuery, string sortOrder)
+        {
+            decimal parkingHourlyPrice = 100.00m; // Pris per timme
+            var members = _context
+                .Users.Include(u => u.Vehicles) // Hämtar användare och deras fordon
+                .ToList()
+                .Select(user => new MemberViewModel(user, parkingHourlyPrice)) // Mappar till MemberViewModel
+                .ToList();
+
+            // Sökfunktion
+            if (!string.IsNullOrWhiteSpace(searchQuery))
+            {
+                members = members
+                    .Where(m => m.Owner.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
+
+            return View(members);
+        }
+
+        public async Task<IActionResult> ParkedVehicle(
+            string? searchTerm = null,
+            string sortColumn = "VehicleType", // Default to sorting by VehicleType
+            string sortOrder = "asc"
+        )
+        {
+            // Get the base query
+            IQueryable<Vehicle> vehicles = _context.Vehicles.Include(v => v.ApplicationUser);
+
+            // Search functionality
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                vehicles = vehicles.Where(v =>
+                    v.RegistrationNumber.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
+                    || v.VehicleType.TypeName.Contains(
+                        searchTerm,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                );
+            }
+
+            // Sorting functionality
+            vehicles = sortColumn switch
+            {
+                "RegistrationNumber" => sortOrder == "asc"
+                    ? vehicles.OrderBy(v => v.RegistrationNumber)
+                    : vehicles.OrderByDescending(v => v.RegistrationNumber),
+                "VehicleType" => sortOrder == "asc"
+                    ? vehicles.OrderBy(v => v.VehicleType.TypeName)
+                    : vehicles.OrderByDescending(v => v.VehicleType.TypeName),
+                _ => vehicles.OrderBy(v =>
+                    v.VehicleType.TypeName
+                ) // Default sort by VehicleType
+                ,
+            };
+
+            // Generate ViewModel
+            var viewModel = await vehicles
+                .Where(vehicle => vehicle.ApplicationUser != null) // Exclude vehicles without owners
+                .Select(vehicle => new ParkedVehicleViewModel(
+                    vehicle,
+                    vehicle.ApplicationUser // Include related ApplicationUser  for owner details
+                ))
+                .ToListAsync();
+
+            // Current sort info for the frontend
+            ViewData["CurrentSort"] = $"{sortColumn}_{sortOrder}";
+
+            // Pass the search term back to the view to retain it in the filter input
+            ViewData["SearchTerm"] = searchTerm;
+
+            return View(viewModel);
         }
 
         public async Task<IActionResult> ParkingSpot()
@@ -198,7 +278,9 @@ namespace lexicon_Garage2.Controllers
         // GET: Vehicles/Create
         public async Task<IActionResult> Create()
         {
-            return View();
+
+            // Return the view with an empty VehicleViewModel
+            return View(new VehicleViewModel());
         }
 
         [HttpPost]
@@ -207,10 +289,10 @@ namespace lexicon_Garage2.Controllers
         {
 
 
-            // Hämta en ledig parkeringsplats
-            var availableSpot = await _context.ParkingSpots
-                .FirstOrDefaultAsync(spot => !spot.IsOccupied);
-
+            // Check for available parking spots
+            var availableSpot = await _context.ParkingSpots.FirstOrDefaultAsync(spot =>
+                !spot.IsOccupied
+            );
             if (availableSpot == null)
             {
                 TempData["ErrorMessage"] = "The garage is full. No available parking spots.";
@@ -237,10 +319,15 @@ namespace lexicon_Garage2.Controllers
                     availableSpot.IsOccupied = true;
 
 
-                    _context.Vehicles.Add(vehicle);
-                    await _context.SaveChangesAsync();
+                    // Mark the parking spot as occupied
+                    availableSpot.IsOccupied = true;
 
-                    TempData["SuccessMessage"] = $"Vehicle parked at spot #{availableSpot.SpotNumber}.";
+                    // Add the vehicle to the context
+                    _context.Vehicles.Add(vehicle);
+                    await _context.SaveChangesAsync(); // Don't forget to save changes
+
+                    TempData["SuccessMessage"] =
+                        $"Vehicle parked at spot #{availableSpot.SpotNumber}.";
                     return RedirectToAction(nameof(Garage));
                 }
                 catch (DbUpdateException ex)
@@ -253,16 +340,16 @@ namespace lexicon_Garage2.Controllers
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error: {ex.Message}");
+                    // Log or handle any other exception
+                    Console.WriteLine("Error: ", ex);
+                    TempData["ErrorMessage"] = "An unexpected error occurred.";
                 }
             }
 
+            // If we got this far, something failed; redisplay the form
             TempData["ErrorMessage"] = "Could not park the vehicle. Please check your inputs.";
             return View(vehicleViewModel);
         }
-
-
-
 
         // GET: Vehicles/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -360,7 +447,9 @@ namespace lexicon_Garage2.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var vehicle = await _context.Vehicles.Include(v => v.ParkingSpots).FirstOrDefaultAsync(v => v.Id == id);
+            var vehicle = await _context
+                .Vehicles.Include(v => v.ParkingSpots)
+                .FirstOrDefaultAsync(v => v.Id == id);
             if (vehicle != null)
             {
                 // Create the receipt view model before the vehicle gets changed
@@ -383,11 +472,12 @@ namespace lexicon_Garage2.Controllers
             return RedirectToAction(nameof(Garage));
         }
 
-
         // GET: Statistics
         public async Task<IActionResult> Statistics()
         {
             var vehicles = await _context.Vehicles.ToListAsync();
+            var parkingSpots = await _context.ParkingSpots.ToListAsync();
+
             var vehicleStats = new StatisticsViewModel
             {
                 NumberOfVehiclesParked = vehicles.Count,
@@ -396,6 +486,9 @@ namespace lexicon_Garage2.Controllers
                     vehicles.Sum(v => (decimal)(DateTime.Now - v.ParkingTime).TotalHours)
                     * ParkingHourlyPrice,
                 AccumulatedParkingRevenueView = AccumulatedParkingRevenue,
+                TotalParkingSpots = parkingSpots.Count,
+                OccupiedParkingSpots = parkingSpots.Count(p => p.IsOccupied),
+                FreeParkingSpots = parkingSpots.Count(p => !p.IsOccupied),
             };
 
             return View(vehicleStats);
@@ -420,7 +513,10 @@ namespace lexicon_Garage2.Controllers
             // Skapa en ny ParkingSpot med nästa SpotNumber
             var newSpot = new ParkingSpot
             {
-                SpotNumber = maxSpotNumber + 1 // Tilldela nästa löpande nummer
+                SpotNumber =
+                    maxSpotNumber
+                    + 1 // Tilldela nästa löpande nummer
+                ,
             };
 
             // Lägg till den nya ParkingSpot i databasen
@@ -430,8 +526,5 @@ namespace lexicon_Garage2.Controllers
             TempData["SuccessMessage"] = $"Parking spot {newSpot.SpotNumber} created successfully.";
             return RedirectToAction(nameof(ParkingSpot));
         }
-
-
-
     }
 }

@@ -1,4 +1,5 @@
-﻿@model IEnumerable<VehicleViewModel>
+﻿@using lexicon_Garage2.Models.ViewModels
+@model IEnumerable<VehicleViewModel>
 
 @{
     ViewData["Title"] = "Garage";
@@ -102,7 +103,7 @@
                     <td>@Html.DisplayFor(modelItem => item.VehicleType)</td>
                     <td>@Html.DisplayFor(modelItem => item.RegistrationNumber)</td>
                     <td>@Html.DisplayFor(modelItem => item.ArrivalTime)</td>
-                    <td>@Html.DisplayFor(modelItem => item.ParkingSpotsTaken)</td>
+                    @* <td>@Html.DisplayFor(modelItem => item.ParkingSpotsTaken)</td> *@
                     <td>
                         <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
                         <a class="btn btn-sm btn-info" asp-action="Details" asp-route-id="@item.Id">Details</a>

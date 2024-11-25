@@ -53,8 +53,6 @@ namespace lexicon_Garage2.Data
 
             if (user != null)
                 await AddUserToRoleAsync(user, "User");
-
-            
         }
 
         private static async Task AddVehicleTypesAsync()
@@ -69,16 +67,11 @@ namespace lexicon_Garage2.Data
         {
             if (await context.VehicleTypes.AnyAsync(vt => vt.TypeName == typeName))
             {
-                return null;
+                return null!;
             }
-            var vehicleType = new VehicleType()
-            {
-                TypeName = typeName,
-                Size = size,
-            };
+            var vehicleType = new VehicleType() { TypeName = typeName, Size = size };
             var result = context.Add(vehicleType);
             await context.SaveChangesAsync();
-            
 
             return vehicleType;
         }
@@ -118,7 +111,7 @@ namespace lexicon_Garage2.Data
         {
             var found = await userManager.FindByEmailAsync(accountEmail);
             if (found != null)
-                return null;
+                return null!;
 
             var user = new ApplicationUser
             {

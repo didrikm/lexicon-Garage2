@@ -6,7 +6,6 @@ namespace lexicon_Garage2.Models
     {
         public int Id { get; set; }
 
-        [Required]
         public VehicleType VehicleType { get; set; }
 
         [Required]

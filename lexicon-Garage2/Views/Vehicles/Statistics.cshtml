@@ -13,6 +13,14 @@
                 <p><strong class="text-dark fw-semibold">Number of wheels in garage:</strong> @Model.NumberOfWheelsInGarage</p>
                 <p><strong class="text-dark fw-semibold">Unrealized parking revenue:</strong> @Model.UnrealizedParkingRevenue.ToString("C")</p>
                 <p><strong class="text-dark fw-semibold">Accumulated parking revenue:</strong> @Model.AccumulatedParkingRevenueView.ToString("C")</p>
+
+
+                <hr />
+                <h3 class="text-center mt-4 text-dark fw-bold">Parking Spot Overview</h3>
+                <p><strong class="text-dark fw-semibold">Total parking spots:</strong> @Model.TotalParkingSpots</p>
+                <p><strong class="text-dark fw-semibold">Occupied parking spots:</strong> @Model.OccupiedParkingSpots</p>
+                <p><strong class="text-dark fw-semibold">Free parking spots:</strong> @Model.FreeParkingSpots</p>
+
                 <div class="text-center mt-4">
                     <a asp-action="Garage" class="btn btn-secondary px-4 me-3">Return to Garage</a>
                 </div>

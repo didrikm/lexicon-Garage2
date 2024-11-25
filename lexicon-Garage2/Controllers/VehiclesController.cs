@@ -280,7 +280,7 @@ namespace lexicon_Garage2.Controllers
         {
 
             // Return the view with an empty VehicleViewModel
-            return View(new VehicleViewModel2());
+            return View();
         }
 
         [HttpPost]

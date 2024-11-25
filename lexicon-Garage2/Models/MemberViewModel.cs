@@ -7,7 +7,7 @@ namespace lexicon_Garage2.Models
         public string Owner { get; set; } // Namn på medlem
         public int VehicleCount { get; set; } // Antal fordon
         public decimal TotalPrice { get; set; } // Totalkostnad för alla fordon
-        public List<VehicleViewModel> Vehicles { get; set; } // Lista över fordon
+        public List<VehicleViewModel2> Vehicles { get; set; } // Lista över fordon
 
         public MemberViewModel(ApplicationUser user, decimal parkingHourlyPrice)
         {
@@ -20,7 +20,7 @@ namespace lexicon_Garage2.Models
             );
 
             // Skapar en lista av VehicleViewModel
-            Vehicles = user.Vehicles.Select(v => new VehicleViewModel(v)).ToList();
+            Vehicles = user.Vehicles.Select(v => new VehicleViewModel2(v)).ToList();
         }
     }
 }

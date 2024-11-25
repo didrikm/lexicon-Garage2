@@ -12,11 +12,7 @@ using lexicon_Garage2.Data;
 namespace lexicon_Garage2.Migrations
 {
     [DbContext(typeof(lexicon_Garage2Context))]
-<<<<<<<< HEAD:lexicon-Garage2/Migrations/20241122152255_Init.Designer.cs
-    [Migration("20241122152255_Init")]
-========
-    [Migration("20241122163633_Init")]
->>>>>>>> TryVy:lexicon-Garage2/Migrations/20241122163633_Init.Designer.cs
+    [Migration("20241125103233_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -409,7 +405,7 @@ namespace lexicon_Garage2.Migrations
                         .HasForeignKey("ApplicationUserId");
 
                     b.HasOne("lexicon_Garage2.Models.VehicleType", "VehicleType")
-                        .WithMany()
+                        .WithMany("Vehicles")
                         .HasForeignKey("VehicleTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -427,6 +423,11 @@ namespace lexicon_Garage2.Migrations
             modelBuilder.Entity("lexicon_Garage2.Models.Vehicle", b =>
                 {
                     b.Navigation("ParkingSpots");
+                });
+
+            modelBuilder.Entity("lexicon_Garage2.Models.VehicleType", b =>
+                {
+                    b.Navigation("Vehicles");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,10 +1,10 @@
 ﻿namespace lexicon_Garage2.Models.ViewModels
 {
-    public class VehicleViewModel
+    public class VehicleViewModel2
     {
-        public VehicleViewModel() { }
+        public VehicleViewModel2() { }
 
-        public VehicleViewModel(Vehicle vehicle)
+        public VehicleViewModel2(Vehicle vehicle)
         {
             Id = vehicle.Id;
             //VehicleType = vehicle.VehicleType;

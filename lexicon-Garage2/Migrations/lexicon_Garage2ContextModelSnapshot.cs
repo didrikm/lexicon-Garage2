@@ -260,7 +260,7 @@ namespace lexicon_Garage2.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("ParkingSpots", (string)null);
+                    b.ToTable("ParkingSpots");
                 });
 
             modelBuilder.Entity("lexicon_Garage2.Models.Vehicle", b =>
@@ -312,7 +312,7 @@ namespace lexicon_Garage2.Migrations
 
                     b.HasIndex("VehicleTypeId");
 
-                    b.ToTable("Vehicles", (string)null);
+                    b.ToTable("Vehicles");
                 });
 
             modelBuilder.Entity("lexicon_Garage2.Models.VehicleType", b =>
@@ -332,7 +332,7 @@ namespace lexicon_Garage2.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("VehicleTypes", (string)null);
+                    b.ToTable("VehicleTypes");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -402,7 +402,7 @@ namespace lexicon_Garage2.Migrations
                         .HasForeignKey("ApplicationUserId");
 
                     b.HasOne("lexicon_Garage2.Models.VehicleType", "VehicleType")
-                        .WithMany()
+                        .WithMany("Vehicles")
                         .HasForeignKey("VehicleTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -420,6 +420,11 @@ namespace lexicon_Garage2.Migrations
             modelBuilder.Entity("lexicon_Garage2.Models.Vehicle", b =>
                 {
                     b.Navigation("ParkingSpots");
+                });
+
+            modelBuilder.Entity("lexicon_Garage2.Models.VehicleType", b =>
+                {
+                    b.Navigation("Vehicles");
                 });
 #pragma warning restore 612, 618
         }

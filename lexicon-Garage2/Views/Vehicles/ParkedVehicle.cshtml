@@ -11,23 +11,9 @@
             <th>Owner</th>
             <th>
                 <a asp-action="ParkedVehicle"
-                   asp-route-sortColumn="VehicleType"
-                   asp-route-sortOrder="@(ViewData["CurrentSort"]?.ToString() == "VehicleType_asc" ? "desc" : "asc")"
-                   class="text-dark">
-                    <!-- Use Bootstrap's text-dark class -->
-                    @Html.DisplayNameFor(model => model.VehicleType)
-                    @(ViewData["CurrentSort"]?.ToString() == "VehicleType_asc" ? "▼" : "▲")
-                </a>
-                <form asp-action="ParkedVehicle" class="d-inline">
-                    <input type="text" name="searchTerm" placeholder="Filter by vehicle type" class="form-control filter-input" />
-                </form>
-            </th>
-            <th>
-                <a asp-action="ParkedVehicle"
                    asp-route-sortColumn="RegistrationNumber"
                    asp-route-sortOrder="@(ViewData["CurrentSort"]?.ToString() == "RegistrationNumber_asc" ? "desc" : "asc")"
                    class="text-dark">
-                    <!-- Use Bootstrap's text-dark class -->
                     @Html.DisplayNameFor(model => model.RegistrationNumber)
                     @(ViewData["CurrentSort"]?.ToString() == "RegistrationNumber_asc" ? "▼" : "▲")
                 </a>
@@ -38,8 +24,6 @@
             <th>
                 Arrival Time
             </th>
-            <th>Parking Spot</th>
-
         </tr>
     </thead>
 
@@ -48,14 +32,9 @@
         {
             <tr>
                 <td>@Html.DisplayFor(modelItem => item.Owner)</td>
-
-                <td>@Html.DisplayFor(modelItem => item.VehicleType)</td>
                 <td>@Html.DisplayFor(modelItem => item.RegistrationNumber)</td>
                 <td>@Html.DisplayFor(modelItem => item.ArrivalTime)</td>
-                
-               
             </tr>
         }
     </tbody>
 </table>
-

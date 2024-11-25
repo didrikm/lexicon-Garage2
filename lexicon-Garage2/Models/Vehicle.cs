@@ -30,6 +30,7 @@ namespace lexicon_Garage2.Models
         public int NumberOfWheels { get; set; }
 
         public DateTime ParkingTime { get; set; }
+        public int? ParkingSpotId { get; set; }
         public ICollection<ParkingSpot> ParkingSpots { get; set; }
 
         public string? ApplicationUserId { get; set; }
@@ -39,7 +40,6 @@ namespace lexicon_Garage2.Models
         {
             ParkingTime = DateTime.Now;
             ParkingSpots = new List<ParkingSpot>();
-
         }
     }
 }

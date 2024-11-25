@@ -112,11 +112,10 @@ namespace lexicon_Garage2.Controllers
 
         public async Task<IActionResult> ParkedVehicle(
             string? searchTerm = null,
-            string sortColumn = "VehicleType", // Default to sorting by VehicleType
+            string sortColumn = "RegistrationNumber", // Default sort
             string sortOrder = "asc"
         )
         {
-            // Get the base query
             IQueryable<Vehicle> vehicles = _context.Vehicles.Include(v => v.ApplicationUser);
 
             // Search functionality
@@ -124,10 +123,6 @@ namespace lexicon_Garage2.Controllers
             {
                 vehicles = vehicles.Where(v =>
                     v.RegistrationNumber.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
-                    || v.VehicleType.TypeName.Contains(
-                        searchTerm,
-                        StringComparison.OrdinalIgnoreCase
-                    )
                 );
             }
 
@@ -137,13 +132,7 @@ namespace lexicon_Garage2.Controllers
                 "RegistrationNumber" => sortOrder == "asc"
                     ? vehicles.OrderBy(v => v.RegistrationNumber)
                     : vehicles.OrderByDescending(v => v.RegistrationNumber),
-                "VehicleType" => sortOrder == "asc"
-                    ? vehicles.OrderBy(v => v.VehicleType.TypeName)
-                    : vehicles.OrderByDescending(v => v.VehicleType.TypeName),
-                _ => vehicles.OrderBy(v =>
-                    v.VehicleType.TypeName
-                ) // Default sort by VehicleType
-                ,
+                _ => vehicles.OrderBy(v => v.RegistrationNumber), // Default sorting
             };
 
             // Generate ViewModel
@@ -278,7 +267,6 @@ namespace lexicon_Garage2.Controllers
         // GET: Vehicles/Create
         public async Task<IActionResult> Create()
         {
-
             // Return the view with an empty VehicleViewModel
             return View();
         }
@@ -287,8 +275,7 @@ namespace lexicon_Garage2.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(VehicleCreateViewmodel vehicleViewModel)
         {
-
-
+            var currentUser = await _userManager.GetUserAsync(User);
             // Check for available parking spots
             var availableSpot = await _context.ParkingSpots.FirstOrDefaultAsync(spot =>
                 !spot.IsOccupied
@@ -299,12 +286,10 @@ namespace lexicon_Garage2.Controllers
                 return RedirectToAction(nameof(Garage));
             }
 
-
             if (ModelState.IsValid)
             {
                 try
                 {
-
                     var vehicle = new Vehicle
                     {
                         Brand = vehicleViewModel.Brand,
@@ -313,11 +298,13 @@ namespace lexicon_Garage2.Controllers
                         Model = vehicleViewModel.Model,
                         VehicleTypeId = vehicleViewModel.VehicleTypeId,
                         RegistrationNumber = vehicleViewModel.RegistrationNumber,
+                        ApplicationUserId = currentUser.Id, // Set the UserId (Foreign Key)
+                        ApplicationUser = currentUser,
+                        ParkingSpotId = availableSpot.Id,
                     };
 
                     vehicle.ParkingSpots.Add(availableSpot);
                     availableSpot.IsOccupied = true;
-
 
                     // Mark the parking spot as occupied
                     availableSpot.IsOccupied = true;

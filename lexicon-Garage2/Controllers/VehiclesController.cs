@@ -432,6 +432,7 @@ namespace lexicon_Garage2.Controllers
         // POST: Vehicles/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        // POST: Vehicles/Delete/5
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var vehicle = await _context
@@ -441,6 +442,13 @@ namespace lexicon_Garage2.Controllers
             {
                 // Create the receipt view model before the vehicle gets changed
                 var receiptViewModel = new ReceiptViewModel(vehicle, ParkingHourlyPrice);
+
+                // Mark the associated parking spot as unoccupied
+                var parkingSpot = await _context.ParkingSpots.FindAsync(vehicle.ParkingSpotId);
+                if (parkingSpot != null)
+                {
+                    parkingSpot.IsOccupied = false;
+                }
 
                 // Remove the vehicle
                 _context.Vehicles.Remove(vehicle);

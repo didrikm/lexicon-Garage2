@@ -5,6 +5,7 @@
         public string Owner { get; set; } // Owner: "Firstname Lastname"
         public string RegistrationNumber { get; set; }
         public DateTime ArrivalTime { get; set; }
+        public int? ParkingSpot { get; set; }
 
         //public VehicleType VehicleType { get; set; }
 
@@ -17,6 +18,7 @@
             // Hantera null-referens för ApplicationUser
             Owner = user != null ? $"{user.FirstName} {user.LastName}" : "Unknown Owner";
             //VehicleType = vehicle.VehicleType ?? new VehicleType { TypeName = "Unknown" };
+            ParkingSpot = vehicle.ParkingSpotId;
         }
     }
 }

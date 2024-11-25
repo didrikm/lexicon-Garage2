@@ -116,7 +116,9 @@ namespace lexicon_Garage2.Controllers
             string sortOrder = "asc"
         )
         {
-            IQueryable<Vehicle> vehicles = _context.Vehicles.Include(v => v.ApplicationUser);
+            IQueryable<Vehicle> vehicles = _context
+                .Vehicles.Include(v => v.ApplicationUser)
+                .Include(v => v.ParkingSpots); // Include ParkingSpot
 
             // Search functionality
             if (!string.IsNullOrEmpty(searchTerm))
